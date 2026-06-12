@@ -128,7 +128,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         const t = document.getElementById('setting-twitter').value;
         const g = document.getElementById('setting-github').value;
         const d = document.getElementById('setting-discord').value;
-        const { error } = await supabaseClient.from('site_settings').upsert({ id: 1, twitter: t, github: g, discord: d });
+        const { error } = await supabaseClient.from('site_settings').update({ twitter: t, github: g, discord: d }).eq('id', 1);
         if(!error) {
             const setMsg = document.getElementById('settings-msg');
             setMsg.classList.remove('d-none');
