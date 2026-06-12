@@ -18,6 +18,7 @@ async function checkAuthAndUpdateUI() {
 
     const authLinkContainer = document.getElementById('auth-link-container');
     if (authLinkContainer) {
+        if (user) {
             // Check if user is Admin
             let isAdmin = false;
             const { data: roleData } = await supabaseClient.from('user_roles').select('role').eq('user_id', user.id).single();
