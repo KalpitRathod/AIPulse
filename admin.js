@@ -91,14 +91,20 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     });
 
-    // LOAD POSTS
+    // LOAD POSTS WITH PAGINATION
+    let adminCurrentPage = 0;
+    const adminPostsPerPage = 5;
+
     async function loadPosts() {
         const tbody = document.getElementById('admin-posts-table');
+        const from = adminCurrentPage * adminPostsPerPage;
+        const to = from + adminPostsPerPage - 1;
         
-        const { data, error } = await supabaseClient
+        const { data, error, count } = await supabaseClient
             .from('articles')
-            .select('*')
-            .order('created_at', { ascending: false });
+            .select('*', { count: 'exact' })
+            .order('created_at', { ascending: false })
+            .range(from, to);
             
         if (error) {
             tbody.innerHTML = `<tr><td colspan="5" class="text-danger">Error: ${error.message}</td></tr>`;
@@ -107,8 +113,17 @@ document.addEventListener('DOMContentLoaded', async () => {
         
         currentPosts = data || [];
         
+        if (currentPosts.length === 0 && adminCurrentPage > 0) {
+            adminCurrentPage--;
+            loadPosts();
+            return;
+        }
+        
         if (currentPosts.length === 0) {
             tbody.innerHTML = `<tr><td colspan="5" class="text-center text-muted py-4">No transmissions found in the database.</td></tr>`;
+            document.getElementById('admin-prev-btn').classList.add('d-none');
+            document.getElementById('admin-next-btn').classList.add('d-none');
+            document.getElementById('admin-page-info').textContent = '';
             return;
         }
         
@@ -129,6 +144,19 @@ document.addEventListener('DOMContentLoaded', async () => {
                 </tr>
             `;
         });
+        
+        // Handle pagination UI
+        const totalPages = Math.ceil(count / adminPostsPerPage);
+        document.getElementById('admin-page-info').textContent = `Page ${adminCurrentPage + 1} of ${totalPages}`;
+        
+        const prevBtn = document.getElementById('admin-prev-btn');
+        const nextBtn = document.getElementById('admin-next-btn');
+        
+        if (adminCurrentPage > 0) prevBtn.classList.remove('d-none');
+        else prevBtn.classList.add('d-none');
+        
+        if (adminCurrentPage < totalPages - 1) nextBtn.classList.remove('d-none');
+        else nextBtn.classList.add('d-none');
         
         document.querySelectorAll('.edit-post').forEach(btn => {
             btn.addEventListener('click', (e) => {
@@ -160,6 +188,66 @@ document.addEventListener('DOMContentLoaded', async () => {
                     loadPosts();
                 }
             });
+        });
+    }
+
+    // Attach pagination listeners (only once)
+    const prevBtn = document.getElementById('admin-prev-btn');
+    const nextBtn = document.getElementById('admin-next-btn');
+    if (prevBtn) {
+        prevBtn.addEventListener('click', () => {
+            if (adminCurrentPage > 0) {
+                adminCurrentPage--;
+                loadPosts();
+            }
+        });
+    }
+    if (nextBtn) {
+        nextBtn.addEventListener('click', () => {
+            adminCurrentPage++;
+            loadPosts();
+        });
+    }
+
+    // GENERATE SITEMAP
+    const sitemapBtn = document.getElementById('generate-sitemap-btn');
+    if (sitemapBtn) {
+        sitemapBtn.addEventListener('click', async () => {
+            sitemapBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Generating...';
+            
+            const { data: allPosts, error } = await supabaseClient.from('articles').select('id, created_at');
+            if (error) {
+                alert('Error fetching posts for sitemap: ' + error.message);
+                sitemapBtn.innerHTML = '<i class="bi bi-diagram-3 me-1"></i>Generate Sitemap';
+                return;
+            }
+            
+            const baseUrl = 'https://ai-pulse-sepia-pi.vercel.app';
+            let xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
+            
+            xml += `  <url>\n    <loc>${baseUrl}/</loc>\n    <changefreq>daily</changefreq>\n    <priority>1.0</priority>\n  </url>\n`;
+            xml += `  <url>\n    <loc>${baseUrl}/login.html</loc>\n    <changefreq>monthly</changefreq>\n    <priority>0.5</priority>\n  </url>\n`;
+            
+            if (allPosts) {
+                allPosts.forEach(p => {
+                    xml += `  <url>\n    <loc>${baseUrl}/post.html?id=${p.id}</loc>\n    <lastmod>${p.created_at.split('T')[0]}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.8</priority>\n  </url>\n`;
+                });
+            }
+            
+            xml += `</urlset>`;
+            
+            const blob = new Blob([xml], { type: 'application/xml' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'sitemap.xml';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            sitemapBtn.innerHTML = '<i class="bi bi-diagram-3 me-1"></i>Generate Sitemap';
+            alert('Sitemap downloaded successfully! Replace your local sitemap.xml with this new file and push to GitHub to index all your latest posts.');
         });
     }
     
