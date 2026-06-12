@@ -174,6 +174,12 @@ document.addEventListener('DOMContentLoaded', async () => {
                     formTitle.innerHTML = '<i class="bi bi-pencil-square me-2"></i>Update Transmission';
                     submitBtn.textContent = 'Save Changes';
                     cancelEditBtn.classList.remove('d-none');
+                    
+                    if (typeof bootstrap !== 'undefined') {
+                        const createTab = new bootstrap.Tab(document.getElementById('create-tab'));
+                        createTab.show();
+                    }
+                    
                     window.scrollTo({ top: 0, behavior: 'smooth' });
                 }
             });

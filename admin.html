@@ -25,9 +25,31 @@
 <div class="container py-5">
     <h2 class="ai-font fw-bold mb-4">Command Center</h2>
     
-    <div class="row gx-lg-5">
-        <div class="col-lg-4 mb-5">
-            <div class="card border-0 shadow-sm rounded-4 widget-card h-100">
+    <ul class="nav nav-tabs border-secondary mb-4" id="adminTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active text-light border-secondary ai-font" id="create-tab" data-bs-toggle="tab" data-bs-target="#create-pane" type="button" role="tab">Create</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link text-light border-secondary ai-font" id="manage-tab" data-bs-toggle="tab" data-bs-target="#manage-pane" type="button" role="tab">Manage</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link text-light border-secondary ai-font" id="requests-tab" data-bs-toggle="tab" data-bs-target="#requests-pane" type="button" role="tab">Requests</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link text-light border-secondary ai-font" id="footer-tab" data-bs-toggle="tab" data-bs-target="#footer-pane" type="button" role="tab">Footer</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link text-light border-secondary ai-font" id="categories-tab" data-bs-toggle="tab" data-bs-target="#categories-pane" type="button" role="tab">Categories</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link text-light border-secondary ai-font" id="users-tab" data-bs-toggle="tab" data-bs-target="#users-pane" type="button" role="tab">Users</button>
+        </li>
+    </ul>
+
+    <div class="tab-content" id="adminTabsContent">
+        <!-- Create Pane -->
+        <div class="tab-pane fade show active" id="create-pane" role="tabpanel" tabindex="0">
+            <div class="card border-0 shadow-sm rounded-4 widget-card">
                 <div class="card-body p-4">
                     <h5 id="form-title" class="card-title fw-bold ai-font mb-4 text-primary"><i class="bi bi-pencil-square me-2"></i>Create Transmission</h5>
                     <form id="create-post-form">
@@ -74,9 +96,10 @@
                 </div>
             </div>
         </div>
-        
-        <div class="col-lg-8 mb-5">
-            <div class="card border-0 shadow-sm rounded-4 widget-card h-100">
+
+        <!-- Manage Pane -->
+        <div class="tab-pane fade" id="manage-pane" role="tabpanel" tabindex="0">
+            <div class="card border-0 shadow-sm rounded-4 widget-card">
                 <div class="card-body p-4">
                     <div class="d-flex justify-content-between align-items-center mb-4">
                         <h5 class="card-title fw-bold ai-font mb-0 text-primary"><i class="bi bi-server me-2"></i>Manage Transmissions</h5>
@@ -94,7 +117,6 @@
                                 </tr>
                             </thead>
                             <tbody id="admin-posts-table">
-                                <!-- Posts injected here -->
                                 <tr><td colspan="5" class="text-center text-muted py-4">Initializing database fetch...</td></tr>
                             </tbody>
                         </table>
@@ -107,11 +129,10 @@
                 </div>
             </div>
         </div>
-    </div>
-    
-    <div class="row gx-lg-5">
-        <div class="col-lg-6 mb-5">
-            <div class="card border-0 shadow-sm rounded-4 widget-card h-100">
+
+        <!-- Requests Pane -->
+        <div class="tab-pane fade" id="requests-pane" role="tabpanel" tabindex="0">
+            <div class="card border-0 shadow-sm rounded-4 widget-card">
                 <div class="card-body p-4">
                     <h5 class="card-title fw-bold ai-font mb-4 text-warning"><i class="bi bi-key me-2"></i>Credential Requests</h5>
                     <ul class="list-group list-group-flush bg-transparent" id="admin-password-requests">
@@ -120,9 +141,10 @@
                 </div>
             </div>
         </div>
-        
-        <div class="col-lg-6 mb-5">
-            <div class="card border-0 shadow-sm rounded-4 widget-card h-100">
+
+        <!-- Footer Pane -->
+        <div class="tab-pane fade" id="footer-pane" role="tabpanel" tabindex="0">
+            <div class="card border-0 shadow-sm rounded-4 widget-card">
                 <div class="card-body p-4">
                     <h5 class="card-title fw-bold ai-font mb-4 text-info"><i class="bi bi-link-45deg me-2"></i>Footer Configuration</h5>
                     <form id="settings-form">
@@ -144,9 +166,32 @@
                 </div>
             </div>
         </div>
+
+        <!-- Categories Pane -->
+        <div class="tab-pane fade" id="categories-pane" role="tabpanel" tabindex="0">
+            <div class="card border-0 shadow-sm rounded-4 widget-card">
+                <div class="card-body p-4 text-center py-5">
+                    <i class="bi bi-tags display-4 text-muted mb-3 d-block"></i>
+                    <h5 class="card-title fw-bold ai-font mb-2 text-light">Dynamic Category Management</h5>
+                    <p class="text-muted mb-0">The category taxonomy module is currently hardcoded in the frontend. Dynamic addition/removal via the database will be unlocked in the v2.0 schema update.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Users Pane -->
+        <div class="tab-pane fade" id="users-pane" role="tabpanel" tabindex="0">
+            <div class="card border-0 shadow-sm rounded-4 widget-card">
+                <div class="card-body p-4 text-center py-5">
+                    <i class="bi bi-people display-4 text-muted mb-3 d-block"></i>
+                    <h5 class="card-title fw-bold ai-font mb-2 text-light">User Role Access</h5>
+                    <p class="text-muted mb-0">User permissions and editor role management are currently handled directly through the Supabase Table Editor. In-app assignment will be available in the v2.0 update.</p>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="supabase-client.js"></script>
 <script src="admin.js"></script>
