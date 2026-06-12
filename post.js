@@ -140,7 +140,10 @@ document.addEventListener('DOMContentLoaded', async () => {
             const userIds = [...new Set(comments.map(c => c.user_id))];
             const { data: profiles } = await supabaseClient.from('user_profiles').select('id, name').in('id', userIds);
             
-            comments.forEach(comment => {
+            const topLevel = comments.filter(c => !c.parent_id);
+            const replies = comments.filter(c => c.parent_id);
+            
+            function renderComment(comment, depth = 0) {
                 const date = new Date(comment.created_at).toLocaleString();
                 const p = profiles?.find(prof => prof.id === comment.user_id);
                 const authorName = (p && p.name) ? p.name : 'Anonymous Node';
@@ -149,10 +152,18 @@ document.addEventListener('DOMContentLoaded', async () => {
                 if (user && user.id === comment.user_id) {
                     deleteBtnHtml = `<button class="btn btn-sm btn-outline-danger delete-comment-btn ms-auto" data-id="${comment.id}"><i class="bi bi-trash"></i></button>`;
                 }
+                
+                let replyBtnHtml = '';
+                if (user) {
+                    replyBtnHtml = `<button class="btn btn-sm btn-link text-muted text-decoration-none p-0 reply-btn" data-id="${comment.id}" data-name="${authorName}"><i class="bi bi-reply-fill"></i> Reply</button>`;
+                }
 
-                list.innerHTML += `
-                    <div class="card border border-secondary bg-dark p-3 rounded-4 shadow-sm widget-card">
-                        <div class="d-flex align-items-center mb-3">
+                const marginLeft = depth > 0 ? `margin-left: ${Math.min(depth * 2, 6)}rem;` : '';
+                const borderClass = depth > 0 ? 'border-start border-primary border-4' : 'border-secondary';
+
+                let html = `
+                    <div class="card bg-dark p-3 rounded-4 shadow-sm widget-card mb-3 ${borderClass}" style="${marginLeft} border: 1px solid #3f3f46;">
+                        <div class="d-flex align-items-center mb-2">
                             <div>
                                 <h6 class="mb-0 ai-font">
                                     <a href="profile.html?id=${comment.user_id}" class="text-light text-decoration-none hover-primary">${authorName}</a>
@@ -161,46 +172,91 @@ document.addEventListener('DOMContentLoaded', async () => {
                             </div>
                             ${deleteBtnHtml}
                         </div>
-                        <p class="mb-0 text-light" style="font-size: 0.95rem;">${comment.content}</p>
+                        <p class="mb-2 text-light" style="font-size: 0.95rem;">${comment.content}</p>
+                        <div>${replyBtnHtml}</div>
                     </div>
                 `;
+                
+                const children = replies.filter(c => c.parent_id === comment.id);
+                children.forEach(child => {
+                    html += renderComment(child, depth + 1);
+                });
+                
+                return html;
+            }
+
+            let finalHtml = '';
+            topLevel.forEach(comment => {
+                finalHtml += renderComment(comment, 0);
             });
+            list.innerHTML = finalHtml;
         }
     }
     
     loadComments();
 
     document.getElementById('comments-list').addEventListener('click', async (e) => {
-        const btn = e.target.closest('.delete-comment-btn');
-        if (btn) {
+        const delBtn = e.target.closest('.delete-comment-btn');
+        if (delBtn) {
             if (confirm('Are you sure you want to delete this comment?')) {
-                const commentId = btn.getAttribute('data-id');
+                const commentId = delBtn.getAttribute('data-id');
                 const { error } = await supabaseClient.from('comments').delete().eq('id', commentId);
-                if (!error) {
-                    loadComments();
-                } else {
-                    alert('Error deleting: ' + error.message);
-                }
+                if (!error) loadComments();
+                else alert('Error deleting: ' + error.message);
             }
+            return;
         }
+        
+        const repBtn = e.target.closest('.reply-btn');
+        if (repBtn) {
+            const commentId = repBtn.getAttribute('data-id');
+            const authorName = repBtn.getAttribute('data-name');
+            document.getElementById('reply-parent-id').value = commentId;
+            document.getElementById('replying-to-name').textContent = authorName;
+            document.getElementById('replying-to-badge').classList.remove('d-none');
+            document.getElementById('comment-input').focus();
+        }
+    });
+
+    document.getElementById('cancel-reply-btn')?.addEventListener('click', () => {
+        document.getElementById('reply-parent-id').value = '';
+        document.getElementById('replying-to-badge').classList.add('d-none');
     });
 
     // Submit Comment
     document.getElementById('comment-form').addEventListener('submit', async (e) => {
         e.preventDefault();
         const input = document.getElementById('comment-input');
+        const parentId = document.getElementById('reply-parent-id').value || null;
         
         const { error } = await supabaseClient.from('comments').insert([{
             article_id: postId,
             user_id: user.id,
-            content: input.value
+            content: input.value,
+            parent_id: parentId
         }]);
         
         if (!error) {
             input.value = '';
+            document.getElementById('cancel-reply-btn')?.click();
             loadComments();
         } else {
             alert('Transmission failed: ' + error.message);
         }
+    });
+
+    // Social Sharing
+    document.getElementById('share-twitter')?.addEventListener('click', () => {
+        const shareUrl = encodeURIComponent(window.location.href);
+        const shareTitle = encodeURIComponent(document.getElementById('post-title').textContent);
+        window.open(`https://twitter.com/intent/tweet?url=${shareUrl}&text=${shareTitle}`, '_blank');
+    });
+    document.getElementById('share-linkedin')?.addEventListener('click', () => {
+        const shareUrl = encodeURIComponent(window.location.href);
+        window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${shareUrl}`, '_blank');
+    });
+    document.getElementById('share-facebook')?.addEventListener('click', () => {
+        const shareUrl = encodeURIComponent(window.location.href);
+        window.open(`https://www.facebook.com/sharer/sharer.php?u=${shareUrl}`, '_blank');
     });
 });

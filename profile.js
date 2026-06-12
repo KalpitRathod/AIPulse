@@ -37,7 +37,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (profile.linkedin) socialsHtml += `<a href="${profile.linkedin}" target="_blank" class="btn btn-outline-light rounded-circle icon-btn"><i class="bi bi-linkedin"></i></a>`;
     document.getElementById('profile-socials').innerHTML = socialsHtml;
 
-    // Show Edit Button if owner
     if (currentUser && currentUser.id === profileId) {
         document.getElementById('edit-profile-btn-container').classList.remove('d-none');
         document.getElementById('edit-name').value = profile.name || '';
@@ -45,6 +44,43 @@ document.addEventListener('DOMContentLoaded', async () => {
         document.getElementById('edit-twitter').value = profile.twitter || '';
         document.getElementById('edit-github').value = profile.github || '';
         document.getElementById('edit-linkedin').value = profile.linkedin || '';
+    }
+
+    // Follow Logic
+    if (currentUser && currentUser.id !== profileId) {
+        document.getElementById('follow-btn-container').classList.remove('d-none');
+        const followBtn = document.getElementById('follow-btn');
+        
+        const { data: followData } = await supabaseClient
+            .from('follows')
+            .select('*')
+            .eq('follower_id', currentUser.id)
+            .eq('following_id', profileId)
+            .single();
+            
+        let isFollowing = !!followData;
+        
+        function updateFollowBtn() {
+            if (isFollowing) {
+                followBtn.innerHTML = '<i class="bi bi-person-dash me-1"></i> Unfollow';
+                followBtn.classList.replace('btn-outline-info', 'btn-info');
+            } else {
+                followBtn.innerHTML = '<i class="bi bi-person-plus me-1"></i> Follow';
+                followBtn.classList.replace('btn-info', 'btn-outline-info');
+            }
+        }
+        updateFollowBtn();
+        
+        followBtn.addEventListener('click', async () => {
+            if (isFollowing) {
+                await supabaseClient.from('follows').delete().match({ follower_id: currentUser.id, following_id: profileId });
+                isFollowing = false;
+            } else {
+                await supabaseClient.from('follows').insert([{ follower_id: currentUser.id, following_id: profileId }]);
+                isFollowing = true;
+            }
+            updateFollowBtn();
+        });
     }
 
     // Fetch Comments

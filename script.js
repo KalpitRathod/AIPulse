@@ -70,6 +70,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             // State for query and categories
             let currentSearchQuery = null;
             let currentCategory = null;
+            let currentFeed = 'official';
 
             // 2. Fetch Regular Posts with Pagination & Filters
             async function fetchPostsGrid(reset = false) {
@@ -92,6 +93,31 @@ document.addEventListener('DOMContentLoaded', async () => {
                     .eq('status', 'published')
                     .order('created_at', { ascending: false })
                     .range(from, to);
+                    
+                if (currentFeed === 'official') {
+                    query = query.eq('type', 'official');
+                } else if (currentFeed === 'community') {
+                    query = query.eq('type', 'community');
+                } else if (currentFeed === 'following') {
+                    const { data: sessionData } = await supabaseClient.auth.getSession();
+                    const user = sessionData?.session?.user;
+                    if (!user) {
+                        container.innerHTML = `<div class="alert bg-dark border border-secondary text-center text-muted rounded-4 py-4 w-100">Authenticate to view your following feed.</div>`;
+                        if (spinner) spinner.classList.add('d-none');
+                        if (loadMoreBtnContainer) loadMoreBtnContainer.classList.add('d-none');
+                        return;
+                    }
+                    const { data: follows } = await supabaseClient.from('follows').select('following_id').eq('follower_id', user.id);
+                    if (follows && follows.length > 0) {
+                        const followingIds = follows.map(f => f.following_id);
+                        query = query.in('author_id', followingIds);
+                    } else {
+                        container.innerHTML = `<div class="alert bg-dark border border-secondary text-center text-muted rounded-4 py-4 w-100">You are not following any active nodes yet.</div>`;
+                        if (spinner) spinner.classList.add('d-none');
+                        if (loadMoreBtnContainer) loadMoreBtnContainer.classList.add('d-none');
+                        return;
+                    }
+                }
 
                 if (currentSearchQuery) {
                     query = query.or(`title.ilike.%${currentSearchQuery}%,excerpt.ilike.%${currentSearchQuery}%,content.ilike.%${currentSearchQuery}%`);
@@ -164,6 +190,26 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
 
             // --- WIDGET EVENT LISTENERS ---
+            
+            // Main Nav Tabs
+            const mainNavTabs = document.querySelectorAll('.nav-tab-link');
+            mainNavTabs.forEach(tab => {
+                tab.addEventListener('click', async (e) => {
+                    e.preventDefault();
+                    currentFeed = e.currentTarget.getAttribute('data-feed');
+                    
+                    mainNavTabs.forEach(t => t.classList.remove('active', 'text-primary'));
+                    e.currentTarget.classList.add('active', 'text-primary');
+                    
+                    // Reset filters
+                    if (searchInput) searchInput.value = '';
+                    currentSearchQuery = null;
+                    currentCategory = null;
+                    document.querySelectorAll('.category-filter').forEach(el => el.classList.remove('fw-bold', 'text-light'));
+                    
+                    await fetchPostsGrid(true);
+                });
+            });
             
             // Search Input Logic
             const searchInput = document.getElementById('search-input');

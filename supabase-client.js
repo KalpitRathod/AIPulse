@@ -26,9 +26,11 @@ async function checkAuthAndUpdateUI() {
                 isAdmin = true;
             }
             
+            const writeBtn = `<a href="create-post.html" class="btn btn-outline-success rounded-pill px-3 me-2 shadow-sm border-secondary text-decoration-none"><i class="bi bi-pencil"></i> Write</a>`;
             const dashboardBtn = isAdmin ? `<a href="admin.html" class="btn btn-outline-light rounded-pill px-3 me-2 shadow-sm border-secondary text-decoration-none">Command Center</a>` : '';
             
             authLinkContainer.innerHTML = `
+                ${writeBtn}
                 ${dashboardBtn}
                 <a href="profile.html?id=${user.id}" class="btn btn-outline-primary rounded-pill px-3 me-2 shadow-sm border-secondary text-decoration-none"><i class="bi bi-person"></i> Profile</a>
                 <button id="logout-btn" class="btn btn-primary rounded-pill px-4 shadow-sm">Logout</button>

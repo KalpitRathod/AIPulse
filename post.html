@@ -59,11 +59,24 @@
         
         <hr class="my-5 border-secondary">
         
+        <!-- Social Sharing -->
+        <div class="d-flex align-items-center gap-2 mb-5">
+            <span class="text-muted small fw-medium me-2">Share this:</span>
+            <button id="share-twitter" class="btn btn-outline-light rounded-circle icon-btn"><i class="bi bi-twitter-x"></i></button>
+            <button id="share-linkedin" class="btn btn-outline-light rounded-circle icon-btn"><i class="bi bi-linkedin"></i></button>
+            <button id="share-facebook" class="btn btn-outline-light rounded-circle icon-btn"><i class="bi bi-facebook"></i></button>
+        </div>
+        
         <!-- Comments Section -->
         <h3 class="ai-font fw-bold mb-4 text-primary"><i class="bi bi-chat-text me-2"></i>Discussion (<span id="comment-count">0</span>)</h3>
         
         <div id="comment-form-container" class="mb-5">
-            <form id="comment-form" class="card border-0 bg-dark p-3 rounded-4 shadow-sm widget-card">
+            <form id="comment-form" class="card border-0 bg-dark p-3 rounded-4 shadow-sm widget-card d-flex flex-column">
+                <div id="replying-to-badge" class="badge bg-secondary mb-2 d-none align-self-start py-2 px-3">
+                    Replying to <span id="replying-to-name" class="fw-bold text-light"></span>
+                    <button type="button" class="btn-close btn-close-white ms-2 align-middle" style="font-size: 0.5rem;" id="cancel-reply-btn"></button>
+                </div>
+                <input type="hidden" id="reply-parent-id" value="">
                 <textarea id="comment-input" class="form-control bg-transparent border-secondary text-light shadow-none mb-3" rows="3" placeholder="Add your perspective to the discussion..." required></textarea>
                 <div class="text-end">
                     <button type="submit" class="btn btn-primary rounded-pill px-4 fw-medium">Transmit Comment</button>
