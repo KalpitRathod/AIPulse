@@ -273,6 +273,13 @@ document.addEventListener('DOMContentLoaded', async () => {
                 });
             }
             
+            const { data: allUsers } = await supabaseClient.from('user_profiles').select('id, created_at');
+            if (allUsers) {
+                allUsers.forEach(u => {
+                    xml += `  <url>\n    <loc>${baseUrl}/profile.html?id=${u.id}</loc>\n    <lastmod>${u.created_at.split('T')[0]}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.6</priority>\n  </url>\n`;
+                });
+            }
+            
             xml += `</urlset>`;
             
             const blob = new Blob([xml], { type: 'application/xml' });
@@ -429,7 +436,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const date = new Date(p.created_at).toLocaleDateString();
                 
                 const selectHtml = `
-                    <select class="form-select form-select-sm bg-dark text-light border-secondary role-select" data-user="${p.id}" data-roleid="${roleId || ''}">
+                    <select class="form-select form-select-sm bg-dark text-light border-secondary role-select d-inline-block w-auto" data-user="${p.id}" data-roleid="${roleId || ''}">
                         <option value="user" ${role === 'user' ? 'selected' : ''}>User</option>
                         <option value="admin" ${role === 'admin' ? 'selected' : ''}>Admin</option>
                     </select>
@@ -441,7 +448,10 @@ document.addEventListener('DOMContentLoaded', async () => {
                             <td class="text-light">${p.email}</td>
                             <td class="text-muted small">${date}</td>
                             <td>${role === 'admin' ? '<span class="badge bg-danger">Admin</span>' : '<span class="badge bg-secondary">User</span>'}</td>
-                            <td>${selectHtml}</td>
+                            <td>
+                                ${selectHtml}
+                                <button class="btn btn-sm btn-outline-danger ms-2 delete-user rounded-pill" data-id="${p.id}" title="Eradicate Node"><i class="bi bi-trash"></i></button>
+                            </td>
                         </tr>
                     `;
                 }
@@ -459,6 +469,20 @@ document.addEventListener('DOMContentLoaded', async () => {
                         await supabaseClient.from('user_roles').insert([{ user_id: userId, role: newRole }]);
                     }
                     loadUsers();
+                });
+            });
+            
+            document.querySelectorAll('.delete-user').forEach(btn => {
+                btn.addEventListener('click', async (e) => {
+                    if(confirm('WARNING: Are you sure you want to completely eradicate this user from the network? All their transmissions, comments, and profile data will be permanently destroyed.')) {
+                        const userId = e.currentTarget.getAttribute('data-id');
+                        const { error } = await supabaseClient.rpc('delete_user_by_admin', { target_user_id: userId });
+                        if(error) {
+                            alert('Error deleting node: ' + error.message);
+                        } else {
+                            loadUsers();
+                        }
+                    }
                 });
             });
         } else {
