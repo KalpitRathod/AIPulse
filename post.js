@@ -40,6 +40,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('post-loading').classList.add('d-none');
     document.getElementById('post-content-container').classList.remove('d-none');
     
+    // Fetch Author
+    const { data: authorProfile } = await supabaseClient.from('user_profiles').select('name').eq('id', post.author_id).single();
+    const authorName = authorProfile?.name || 'Anonymous Node';
+    document.getElementById('post-author').innerHTML = `<a href="profile.html?id=${post.author_id}" class="text-decoration-none text-info"><i class="bi bi-person me-1"></i>${authorName}</a>`;
+    
     document.getElementById('post-title').textContent = post.title;
     document.getElementById('post-category').textContent = post.category || 'News';
     

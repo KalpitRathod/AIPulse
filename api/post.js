@@ -43,7 +43,7 @@ export default async function handler(req, res) {
             html = html.replace(/<meta property="og:title" id="og-title" content=".*?">/g, `<meta property="og:title" id="og-title" content="${title} | AI Pulse">`);
             html = html.replace(/<meta property="og:description" id="og-desc" content=".*?">/g, `<meta property="og:description" id="og-desc" content="${excerpt}">`);
             html = html.replace(/<meta property="og:image" id="og-image" content=".*?">/g, `<meta property="og:image" id="og-image" content="${image}">`);
-            html = html.replace(/<meta name="twitter:card" content=".*?">/g, `<meta name="twitter:card" content="summary_large_image">`);
+            html = html.replace(/<meta name="twitter:card" content=".*?">/g, `<meta name="twitter:card" content="summary_large_image">\n<meta property="og:url" content="https://ai-pulse-sepia-pi.vercel.app/post.html?id=${id}">`);
         }
     } catch (e) {
         console.error("Fetch error during SSR:", e);

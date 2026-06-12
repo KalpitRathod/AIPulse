@@ -40,12 +40,18 @@ document.addEventListener('DOMContentLoaded', async () => {
                 if (featuredPosts && featuredPosts.length > 0) {
                     const fPost = featuredPosts[0];
                     loadedFeaturedId = fPost.id;
+                    const { data: fProfile } = await supabaseClient.from('user_profiles').select('name').eq('id', fPost.author_id).single();
+                    const fAuthorName = fProfile?.name || 'Anonymous Node';
+                    
                     heroContainer.innerHTML = `
                     <header class="hero-section py-5 mb-5 rounded-bottom-4 shadow-sm" style="background: linear-gradient(180deg, #18181b 0%, #09090b 100%); border-bottom: 1px solid #27272a;">
                         <div class="container px-4 px-lg-5 my-5">
                             <div class="row align-items-center">
                                 <div class="col-lg-6">
                                     <span class="badge bg-primary rounded-pill px-3 py-2 mb-3 text-uppercase tracking-wide"><i class="bi bi-star-fill me-1"></i> Featured Transmission</span>
+                                    <div class="mb-3">
+                                        <a href="profile.html?id=${fPost.author_id}" class="text-decoration-none text-info"><i class="bi bi-person me-1"></i> ${fAuthorName}</a>
+                                    </div>
                                     <h1 class="display-4 fw-bolder mb-4 ai-font text-light" style="word-wrap: break-word;">${fPost.title}</h1>
                                     <p class="lead fw-normal text-muted mb-4" style="word-wrap: break-word;">${fPost.excerpt}</p>
                                     <a href="post.html?id=${fPost.id}" class="btn btn-primary btn-lg rounded-pill px-5 py-3 shadow-sm">Read Analysis</a>
@@ -136,7 +142,12 @@ document.addEventListener('DOMContentLoaded', async () => {
                 }
 
                 if (articles && articles.length > 0) {
+                    const authorIds = [...new Set(articles.map(a => a.author_id))];
+                    const { data: profiles } = await supabaseClient.from('user_profiles').select('id, name').in('id', authorIds);
+                    
                     articles.forEach(article => {
+                        const author = profiles?.find(p => p.id === article.author_id);
+                        const authorName = author?.name || 'Anonymous Node';
                         // Skip rendering the featured post ONLY IF we are not searching/filtering
                         if (!currentSearchQuery && !currentCategory && loadedFeaturedId === article.id) return;
 
@@ -147,7 +158,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                             <div class="card-body p-4">
                                 <div class="small text-muted mb-2">
                                     <span class="badge bg-primary me-2 px-2 py-1">${article.category || 'AI News'}</span> 
-                                    <i class="bi bi-calendar3 me-1"></i> ${date}
+                                    <i class="bi bi-calendar3 me-1"></i> ${date} • 
+                                    <a href="profile.html?id=${article.author_id}" class="text-decoration-none text-info ms-1"><i class="bi bi-person me-1"></i>${authorName}</a>
                                 </div>
                                 <h2 class="card-title h4 fw-bold ai-font mt-3" style="word-wrap: break-word;"><a href="post.html?id=${article.id}" class="text-decoration-none text-light">${article.title}</a></h2>
                                 <p class="card-text text-muted mb-4" style="word-wrap: break-word;">${article.excerpt}</p>
