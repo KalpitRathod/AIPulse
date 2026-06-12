@@ -40,12 +40,20 @@ document.addEventListener('DOMContentLoaded', () => {
             errorDiv.classList.add('d-none');
             successDiv.classList.add('d-none');
             
+            const name = document.getElementById('signup-name').value;
+            const about = document.getElementById('signup-about').value;
             const email = document.getElementById('signup-email').value;
             const password = document.getElementById('signup-password').value;
             
             const { data, error } = await supabaseClient.auth.signUp({
                 email: email,
                 password: password,
+                options: {
+                    data: {
+                        name: name,
+                        about: about
+                    }
+                }
             });
 
             if (error) {

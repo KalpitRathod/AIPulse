@@ -148,7 +148,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                 list.innerHTML += `
                     <div class="card border border-secondary bg-dark p-3 rounded-4 shadow-sm widget-card">
                         <div class="d-flex align-items-center mb-3">
-                            <i class="bi bi-person-circle fs-3 text-primary me-3"></i>
                             <div>
                                 <h6 class="mb-0 ai-font">
                                     <a href="profile.html?id=${comment.user_id}" class="text-light text-decoration-none hover-primary">${authorName}</a>
