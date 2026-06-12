@@ -4,8 +4,8 @@ const path = require('path');
 export default async function handler(req, res) {
     const { id } = req.query;
 
-    // Read the static post.html file
-    const filePath = path.join(process.cwd(), 'post.html');
+    // Read the static _post.html file
+    const filePath = path.join(process.cwd(), '_post.html');
     let html = '';
     try {
         html = fs.readFileSync(filePath, 'utf8');
