@@ -145,6 +145,11 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const p = profiles?.find(prof => prof.id === comment.user_id);
                 const authorName = (p && p.name) ? p.name : 'Anonymous Node';
                 
+                let deleteBtnHtml = '';
+                if (user && user.id === comment.user_id) {
+                    deleteBtnHtml = `<button class="btn btn-sm btn-outline-danger delete-comment-btn ms-auto" data-id="${comment.id}"><i class="bi bi-trash"></i></button>`;
+                }
+
                 list.innerHTML += `
                     <div class="card border border-secondary bg-dark p-3 rounded-4 shadow-sm widget-card">
                         <div class="d-flex align-items-center mb-3">
@@ -154,6 +159,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                                 </h6>
                                 <small class="text-muted" style="font-size: 0.75rem;">${date}</small>
                             </div>
+                            ${deleteBtnHtml}
                         </div>
                         <p class="mb-0 text-light" style="font-size: 0.95rem;">${comment.content}</p>
                     </div>
@@ -163,6 +169,21 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
     
     loadComments();
+
+    document.getElementById('comments-list').addEventListener('click', async (e) => {
+        const btn = e.target.closest('.delete-comment-btn');
+        if (btn) {
+            if (confirm('Are you sure you want to delete this comment?')) {
+                const commentId = btn.getAttribute('data-id');
+                const { error } = await supabaseClient.from('comments').delete().eq('id', commentId);
+                if (!error) {
+                    loadComments();
+                } else {
+                    alert('Error deleting: ' + error.message);
+                }
+            }
+        }
+    });
 
     // Submit Comment
     document.getElementById('comment-form').addEventListener('submit', async (e) => {

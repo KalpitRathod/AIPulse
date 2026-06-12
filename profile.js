@@ -55,11 +55,18 @@ document.addEventListener('DOMContentLoaded', async () => {
         list.innerHTML = '';
         comments.forEach(c => {
             const date = new Date(c.created_at).toLocaleString();
+            let deleteBtnHtml = '';
+            if (currentUser && currentUser.id === c.user_id) {
+                deleteBtnHtml = `<button class="btn btn-sm btn-outline-danger delete-comment-btn ms-auto" data-id="${c.id}"><i class="bi bi-trash"></i></button>`;
+            }
             list.innerHTML += `
                 <div class="card border border-secondary bg-dark p-3 rounded-4 shadow-sm widget-card">
-                    <div class="mb-2">
-                        <small class="text-primary fw-bold">Commented on: <a href="post.html?id=${c.article_id}" class="text-decoration-none text-info">${c.articles.title}</a></small>
-                        <br><small class="text-muted" style="font-size: 0.75rem;">${date}</small>
+                    <div class="d-flex align-items-start mb-2">
+                        <div>
+                            <small class="text-primary fw-bold">Commented on: <a href="post.html?id=${c.article_id}" class="text-decoration-none text-info">${c.articles.title}</a></small>
+                            <br><small class="text-muted" style="font-size: 0.75rem;">${date}</small>
+                        </div>
+                        ${deleteBtnHtml}
                     </div>
                     <p class="mb-0 text-light" style="font-size: 0.95rem;">${c.content}</p>
                 </div>
@@ -68,6 +75,21 @@ document.addEventListener('DOMContentLoaded', async () => {
     } else {
         list.innerHTML = '<div class="text-muted border border-secondary rounded-4 p-4 text-center">No transmissions logged by this node.</div>';
     }
+
+    document.getElementById('user-comments-list').addEventListener('click', async (e) => {
+        const btn = e.target.closest('.delete-comment-btn');
+        if (btn) {
+            if (confirm('Are you sure you want to delete this comment?')) {
+                const commentId = btn.getAttribute('data-id');
+                const { error } = await supabaseClient.from('comments').delete().eq('id', commentId);
+                if (!error) {
+                    window.location.reload();
+                } else {
+                    alert('Error deleting: ' + error.message);
+                }
+            }
+        }
+    });
 
     // Form Submits
     document.getElementById('edit-profile-form').addEventListener('submit', async (e) => {
