@@ -43,7 +43,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Fetch Author
     const { data: authorProfile } = await supabaseClient.from('user_profiles').select('name').eq('id', post.author_id).single();
     const authorName = authorProfile?.name || 'Anonymous Node';
-    document.getElementById('post-author').innerHTML = `<a href="profile.html?id=${post.author_id}" class="text-decoration-none text-info"><i class="bi bi-person me-1"></i>${authorName}</a>`;
+    document.getElementById('post-author-container').innerHTML = `
+        <div class="bg-secondary bg-opacity-25 text-light rounded-circle d-flex align-items-center justify-content-center fw-bold me-2" style="width: 28px; height: 28px; font-size: 0.75rem;">
+            ${authorName.charAt(0).toUpperCase()}
+        </div>
+        <a href="profile.html?id=${post.author_id}" class="text-decoration-none text-light fw-medium small hover-primary">${authorName}</a>
+    `;
     
     document.getElementById('post-title').textContent = post.title;
     document.getElementById('post-category').textContent = post.category || 'News';

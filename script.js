@@ -49,8 +49,11 @@ document.addEventListener('DOMContentLoaded', async () => {
                             <div class="row align-items-center">
                                 <div class="col-lg-6">
                                     <span class="badge bg-primary rounded-pill px-3 py-2 mb-3 text-uppercase tracking-wide"><i class="bi bi-star-fill me-1"></i> Featured Transmission</span>
-                                    <div class="mb-3">
-                                        <a href="profile.html?id=${fPost.author_id}" class="text-decoration-none text-info"><i class="bi bi-person me-1"></i> ${fAuthorName}</a>
+                                    <div class="mb-3 d-flex align-items-center">
+                                        <div class="bg-primary bg-opacity-25 text-primary border border-primary rounded-circle d-flex align-items-center justify-content-center fw-bold me-2" style="width: 32px; height: 32px; font-size: 0.85rem;">
+                                            ${fAuthorName.charAt(0).toUpperCase()}
+                                        </div>
+                                        <a href="profile.html?id=${fPost.author_id}" class="text-decoration-none text-light fw-medium">${fAuthorName}</a>
                                     </div>
                                     <h1 class="display-4 fw-bolder mb-4 ai-font text-light" style="word-wrap: break-word;">${fPost.title}</h1>
                                     <p class="lead fw-normal text-muted mb-4" style="word-wrap: break-word;">${fPost.excerpt}</p>
@@ -153,17 +156,25 @@ document.addEventListener('DOMContentLoaded', async () => {
 
                         const date = new Date(article.created_at).toLocaleDateString();
                         const html = `
-                        <div class="card mb-4 border-0 shadow-sm rounded-4 overflow-hidden blog-card widget-card">
+                        <div class="card mb-4 border-0 shadow-sm rounded-4 overflow-hidden blog-card widget-card d-flex flex-column h-100">
                             <a href="post.html?id=${article.id}"><img class="card-img-top border-bottom border-secondary" style="height: 250px; object-fit: cover;" src="${article.image_url || 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800'}" alt="Article" /></a>
-                            <div class="card-body p-4">
+                            <div class="card-body p-4 d-flex flex-column">
                                 <div class="small text-muted mb-2">
                                     <span class="badge bg-primary me-2 px-2 py-1">${article.category || 'AI News'}</span> 
-                                    <i class="bi bi-calendar3 me-1"></i> ${date} • 
-                                    <a href="profile.html?id=${article.author_id}" class="text-decoration-none text-info ms-1"><i class="bi bi-person me-1"></i>${authorName}</a>
+                                    <i class="bi bi-calendar3 me-1"></i> ${date}
                                 </div>
-                                <h2 class="card-title h4 fw-bold ai-font mt-3" style="word-wrap: break-word;"><a href="post.html?id=${article.id}" class="text-decoration-none text-light">${article.title}</a></h2>
-                                <p class="card-text text-muted mb-4" style="word-wrap: break-word;">${article.excerpt}</p>
-                                <a class="btn btn-sm btn-outline-primary rounded-pill px-4 fw-medium" href="post.html?id=${article.id}">Read Analysis →</a>
+                                <h2 class="card-title h4 fw-bold ai-font mt-2" style="word-wrap: break-word;"><a href="post.html?id=${article.id}" class="text-decoration-none text-light">${article.title}</a></h2>
+                                <p class="card-text text-muted mb-4 flex-grow-1" style="word-wrap: break-word;">${article.excerpt}</p>
+                                
+                                <div class="d-flex align-items-center justify-content-between mt-auto pt-3 border-top border-secondary">
+                                    <div class="d-flex align-items-center">
+                                        <div class="bg-secondary bg-opacity-25 text-light rounded-circle d-flex align-items-center justify-content-center fw-bold me-2" style="width: 28px; height: 28px; font-size: 0.75rem;">
+                                            ${authorName.charAt(0).toUpperCase()}
+                                        </div>
+                                        <a href="profile.html?id=${article.author_id}" class="text-decoration-none text-light small fw-medium">${authorName}</a>
+                                    </div>
+                                    <a class="btn btn-sm btn-outline-primary rounded-pill px-3 fw-medium" href="post.html?id=${article.id}">Read →</a>
+                                </div>
                             </div>
                         </div>
                         `;
