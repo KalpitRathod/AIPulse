@@ -66,16 +66,15 @@
                 <span id="db-status" class="badge bg-secondary"><i class="bi bi-database me-1"></i> Database Offline</span>
             </div>
             
-            <!-- Container for dynamically loaded Supabase posts -->
-            <div id="dynamic-posts-container">
-                <!-- Static Fallback / Loading state -->
-                <div class="text-center py-5" id="loading-spinner">
-                    <div class="spinner-border text-primary" role="status">
-                        <span class="visually-hidden">Loading...</span>
-                    </div>
-                    <p class="text-muted mt-3">Connecting to Supabase Network...</p>
+            <!-- Static Fallback / Loading state -->
+            <div class="text-center py-5" id="loading-spinner">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
                 </div>
+                <p class="text-muted mt-3">Connecting to Supabase Network...</p>
             </div>
+            <!-- Container for dynamically loaded Supabase posts -->
+            <div id="dynamic-posts-container"></div>
             
             <!-- Dynamic Pagination Load More Button -->
             <div class="text-center mt-5 mb-5 d-none" id="load-more-container">
