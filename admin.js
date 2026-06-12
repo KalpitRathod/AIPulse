@@ -314,8 +314,129 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
+    // LOAD CATEGORIES
+    async function loadCategories() {
+        const catSelect = document.getElementById('post-category');
+        const list = document.getElementById('admin-categories-list');
+        
+        const { data, error } = await supabaseClient.from('categories').select('*').order('name');
+        
+        if (error) {
+            if (catSelect) catSelect.innerHTML = `<option value="">Error loading categories</option>`;
+            if (list) list.innerHTML = `<li class="list-group-item bg-transparent text-danger px-0 border-0">${error.message}</li>`;
+            return;
+        }
+        
+        if (data && data.length > 0) {
+            if (catSelect) {
+                catSelect.innerHTML = '';
+                data.forEach(c => {
+                    catSelect.innerHTML += `<option value="${c.name}">${c.name}</option>`;
+                });
+            }
+            if (list) {
+                list.innerHTML = '';
+                data.forEach(c => {
+                    list.innerHTML += `
+                        <li class="list-group-item bg-transparent text-light px-0 d-flex justify-content-between align-items-center border-secondary py-2">
+                            <span>${c.name}</span>
+                            <button class="btn btn-sm btn-outline-danger delete-cat rounded-pill" data-id="${c.id}"><i class="bi bi-trash"></i></button>
+                        </li>
+                    `;
+                });
+                
+                document.querySelectorAll('.delete-cat').forEach(btn => {
+                    btn.addEventListener('click', async (e) => {
+                        if(confirm('Delete this category?')) {
+                            const id = e.currentTarget.getAttribute('data-id');
+                            await supabaseClient.from('categories').delete().eq('id', id);
+                            loadCategories();
+                        }
+                    });
+                });
+            }
+        } else {
+            if (catSelect) catSelect.innerHTML = `<option value="">No categories found</option>`;
+            if (list) list.innerHTML = `<li class="list-group-item bg-transparent text-muted px-0 border-0">No categories found. Run v2.0 schema script.</li>`;
+        }
+    }
+
+    const addCatBtn = document.getElementById('add-category-btn');
+    if (addCatBtn) {
+        addCatBtn.addEventListener('click', async () => {
+            const name = document.getElementById('new-category-name').value.trim();
+            if(!name) return;
+            const { error } = await supabaseClient.from('categories').insert([{name}]);
+            if (error) alert('Error: ' + error.message);
+            else {
+                document.getElementById('new-category-name').value = '';
+                loadCategories();
+            }
+        });
+    }
+
+    // LOAD USERS
+    async function loadUsers() {
+        const tbody = document.getElementById('admin-users-table');
+        
+        const { data: profiles, error: profError } = await supabaseClient.from('user_profiles').select('*');
+        if (profError) {
+            if (tbody) tbody.innerHTML = `<tr><td colspan="4" class="text-danger">Run the v2.0 SQL Schema update to enable User Management.</td></tr>`;
+            return;
+        }
+        
+        const { data: roles } = await supabaseClient.from('user_roles').select('*');
+        
+        if (profiles && profiles.length > 0) {
+            if (tbody) tbody.innerHTML = '';
+            profiles.forEach(p => {
+                const roleObj = (roles || []).find(r => r.user_id === p.id);
+                const role = roleObj ? roleObj.role : 'user';
+                const roleId = roleObj ? roleObj.id : null;
+                const date = new Date(p.created_at).toLocaleDateString();
+                
+                const selectHtml = `
+                    <select class="form-select form-select-sm bg-dark text-light border-secondary role-select" data-user="${p.id}" data-roleid="${roleId || ''}">
+                        <option value="user" ${role === 'user' ? 'selected' : ''}>User</option>
+                        <option value="admin" ${role === 'admin' ? 'selected' : ''}>Admin</option>
+                    </select>
+                `;
+                
+                if (tbody) {
+                    tbody.innerHTML += `
+                        <tr>
+                            <td class="text-light">${p.email}</td>
+                            <td class="text-muted small">${date}</td>
+                            <td>${role === 'admin' ? '<span class="badge bg-danger">Admin</span>' : '<span class="badge bg-secondary">User</span>'}</td>
+                            <td>${selectHtml}</td>
+                        </tr>
+                    `;
+                }
+            });
+            
+            document.querySelectorAll('.role-select').forEach(select => {
+                select.addEventListener('change', async (e) => {
+                    const newRole = e.target.value;
+                    const userId = e.target.getAttribute('data-user');
+                    const roleId = e.target.getAttribute('data-roleid');
+                    
+                    if (roleId) {
+                        await supabaseClient.from('user_roles').update({ role: newRole }).eq('id', roleId);
+                    } else {
+                        await supabaseClient.from('user_roles').insert([{ user_id: userId, role: newRole }]);
+                    }
+                    loadUsers();
+                });
+            });
+        } else {
+            if (tbody) tbody.innerHTML = `<tr><td colspan="4" class="text-center text-muted py-4">No users found. Run v2.0 schema script.</td></tr>`;
+        }
+    }
+
     // Init Admin Logic
     loadPosts();
     loadSettings();
     loadRequests();
+    loadCategories();
+    loadUsers();
 });

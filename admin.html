@@ -60,12 +60,7 @@
                         <div class="mb-3">
                             <label class="form-label text-muted small">Category</label>
                             <select id="post-category" class="form-select rounded-3 bg-dark border-secondary text-light shadow-none">
-                                <option value="LLMs & Chatbots">LLMs & Chatbots</option>
-                                <option value="Generative Art">Generative Art</option>
-                                <option value="AI Hardware">AI Hardware</option>
-                                <option value="AI Ethics">AI Ethics</option>
-                                <option value="Developer Tools">Developer Tools</option>
-                                <option value="Startups">Startups</option>
+                                <option value="">Loading...</option>
                             </select>
                         </div>
                         <div class="mb-3">
@@ -170,10 +165,15 @@
         <!-- Categories Pane -->
         <div class="tab-pane fade" id="categories-pane" role="tabpanel" tabindex="0">
             <div class="card border-0 shadow-sm rounded-4 widget-card">
-                <div class="card-body p-4 text-center py-5">
-                    <i class="bi bi-tags display-4 text-muted mb-3 d-block"></i>
-                    <h5 class="card-title fw-bold ai-font mb-2 text-light">Dynamic Category Management</h5>
-                    <p class="text-muted mb-0">The category taxonomy module is currently hardcoded in the frontend. Dynamic addition/removal via the database will be unlocked in the v2.0 schema update.</p>
+                <div class="card-body p-4">
+                    <h5 class="card-title fw-bold ai-font mb-4 text-primary"><i class="bi bi-tags me-2"></i>Dynamic Category Management</h5>
+                    <div class="input-group mb-4">
+                        <input type="text" id="new-category-name" class="form-control rounded-start-pill py-2 ps-4 bg-dark border-secondary text-light shadow-none" placeholder="New Category Name...">
+                        <button class="btn btn-success rounded-end-pill px-4" id="add-category-btn" type="button">Add Category</button>
+                    </div>
+                    <ul class="list-group list-group-flush bg-transparent" id="admin-categories-list">
+                        <li class="list-group-item bg-transparent text-muted px-0 border-0">Loading categories...</li>
+                    </ul>
                 </div>
             </div>
         </div>
@@ -181,10 +181,23 @@
         <!-- Users Pane -->
         <div class="tab-pane fade" id="users-pane" role="tabpanel" tabindex="0">
             <div class="card border-0 shadow-sm rounded-4 widget-card">
-                <div class="card-body p-4 text-center py-5">
-                    <i class="bi bi-people display-4 text-muted mb-3 d-block"></i>
-                    <h5 class="card-title fw-bold ai-font mb-2 text-light">User Role Access</h5>
-                    <p class="text-muted mb-0">User permissions and editor role management are currently handled directly through the Supabase Table Editor. In-app assignment will be available in the v2.0 update.</p>
+                <div class="card-body p-4">
+                    <h5 class="card-title fw-bold ai-font mb-4 text-primary"><i class="bi bi-people me-2"></i>User Role Access</h5>
+                    <div class="table-responsive">
+                        <table class="table table-dark table-hover align-middle border-secondary m-0">
+                            <thead>
+                                <tr>
+                                    <th class="border-secondary text-muted fw-normal">Email</th>
+                                    <th class="border-secondary text-muted fw-normal">Joined</th>
+                                    <th class="border-secondary text-muted fw-normal">Current Role</th>
+                                    <th class="border-secondary text-muted fw-normal">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-users-table">
+                                <tr><td colspan="4" class="text-center text-muted py-4">Initializing database fetch...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
