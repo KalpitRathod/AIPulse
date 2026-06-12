@@ -39,6 +39,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     
     document.getElementById('post-title').textContent = post.title;
     document.getElementById('post-category').textContent = post.category || 'News';
+    
+    // Dynamic SEO Injection
+    document.getElementById('meta-title').textContent = post.title + ' | AI Pulse';
+    document.getElementById('meta-desc').setAttribute('content', post.excerpt);
+    document.getElementById('og-title').setAttribute('content', post.title);
+    document.getElementById('og-desc').setAttribute('content', post.excerpt);
+    if(post.image_url) document.getElementById('og-image').setAttribute('content', post.image_url);
     document.getElementById('post-date').innerHTML = `<i class="bi bi-calendar3 me-1"></i> ${new Date(post.created_at).toLocaleDateString()}`;
     document.getElementById('post-image').src = post.image_url || 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=1200';
     document.getElementById('post-body').innerHTML = post.content.replace(/\n/g, '<br>');
