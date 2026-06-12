@@ -100,31 +100,51 @@ document.addEventListener('DOMContentLoaded', async () => {
                 }
             }
 
-            // 2. Fetch Regular Posts with Pagination
-            async function fetchPostsGrid() {
+            // State for query and categories
+            let currentSearchQuery = null;
+            let currentCategory = null;
+
+            // 2. Fetch Regular Posts with Pagination & Filters
+            async function fetchPostsGrid(reset = false) {
                 if (!container) return;
                 
-                if (currentPage === 0) container.innerHTML = '';
+                if (reset) {
+                    currentPage = 0;
+                    container.innerHTML = '';
+                    if (heroContainer) heroContainer.classList.add('d-none'); // Hide hero on search/filter
+                }
+                
                 if(spinner) spinner.classList.remove('d-none');
                 
                 const from = currentPage * postsPerPage;
                 const to = from + postsPerPage - 1;
 
-                const { data: articles, error } = await supabaseClient
+                let query = supabaseClient
                     .from('articles')
                     .select('*')
                     .order('created_at', { ascending: false })
                     .range(from, to);
 
+                if (currentSearchQuery) {
+                    query = query.or(`title.ilike.%${currentSearchQuery}%,excerpt.ilike.%${currentSearchQuery}%,content.ilike.%${currentSearchQuery}%`);
+                }
+                
+                if (currentCategory) {
+                    query = query.eq('category', currentCategory);
+                }
+
+                const { data: articles, error } = await query;
+
                 if (error) {
                     container.innerHTML += `<div class="alert alert-danger">Error: ${error.message}</div>`;
+                    if(spinner) spinner.classList.add('d-none');
                     return;
                 }
 
                 if (articles && articles.length > 0) {
                     articles.forEach(article => {
-                        // Skip rendering the featured post in the grid if it's already shown
-                        if (loadedFeaturedId === article.id) return;
+                        // Skip rendering the featured post ONLY IF we are not searching/filtering
+                        if (!currentSearchQuery && !currentCategory && loadedFeaturedId === article.id) return;
 
                         const date = new Date(article.created_at).toLocaleDateString();
                         const html = `
@@ -152,7 +172,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     }
                     
                 } else if (currentPage === 0) {
-                    container.innerHTML = `<div class="alert bg-dark border border-secondary text-center text-muted rounded-4 py-4 w-100">Database is empty.</div>`;
+                    container.innerHTML = `<div class="alert bg-dark border border-secondary text-center text-muted rounded-4 py-4 w-100">No transmissions found matching your criteria.</div>`;
                     if (loadMoreBtnContainer) loadMoreBtnContainer.classList.add('d-none');
                 } else {
                     // No more posts
@@ -174,6 +194,58 @@ document.addEventListener('DOMContentLoaded', async () => {
                     loadMoreBtn.innerHTML = 'Fetch More Transmissions';
                 });
             }
+
+            // --- WIDGET EVENT LISTENERS ---
+            
+            // Search Input Logic
+            const searchInput = document.getElementById('search-input');
+            const searchBtn = document.getElementById('button-search');
+            
+            if (searchBtn && searchInput) {
+                const performSearch = async () => {
+                    currentSearchQuery = searchInput.value.trim() || null;
+                    currentCategory = null; // Reset category when searching
+                    
+                    // Reset styling on categories
+                    document.querySelectorAll('.category-filter').forEach(el => el.classList.remove('fw-bold', 'text-light'));
+                    
+                    await fetchPostsGrid(true);
+                };
+                
+                searchBtn.addEventListener('click', performSearch);
+                searchInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') performSearch();
+                });
+            }
+
+            // Category Filter Logic
+            const catFilters = document.querySelectorAll('.category-filter');
+            catFilters.forEach(filter => {
+                filter.addEventListener('click', async (e) => {
+                    e.preventDefault();
+                    
+                    // Reset search
+                    if (searchInput) searchInput.value = '';
+                    currentSearchQuery = null;
+                    
+                    const selectedCat = e.currentTarget.getAttribute('data-category');
+                    
+                    // Toggle Logic
+                    if (currentCategory === selectedCat) {
+                        // Un-select
+                        currentCategory = null;
+                        e.currentTarget.classList.remove('fw-bold', 'text-light');
+                        if (heroContainer) heroContainer.classList.remove('d-none'); // Show hero again
+                    } else {
+                        // Select
+                        currentCategory = selectedCat;
+                        catFilters.forEach(el => el.classList.remove('fw-bold', 'text-light'));
+                        e.currentTarget.classList.add('fw-bold', 'text-light');
+                    }
+                    
+                    await fetchPostsGrid(true);
+                });
+            });
 
             // 3. Fetch Dynamic Footer Links
             const { data: settings } = await supabaseClient.from('site_settings').select('*').eq('id', 1).single();
