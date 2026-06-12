@@ -33,6 +33,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     .from('articles')
                     .select('*')
                     .eq('is_featured', true)
+                    .eq('status', 'published')
                     .order('created_at', { ascending: false })
                     .limit(1);
 
@@ -88,6 +89,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 let query = supabaseClient
                     .from('articles')
                     .select('*')
+                    .eq('status', 'published')
                     .order('created_at', { ascending: false })
                     .range(from, to);
 

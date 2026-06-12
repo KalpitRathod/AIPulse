@@ -43,13 +43,31 @@ document.addEventListener('DOMContentLoaded', async () => {
     const cancelEditBtn = document.getElementById('cancel-edit-btn');
     const formTitle = document.getElementById('form-title');
     const submitBtn = document.getElementById('submit-post-btn');
+    const saveDraftBtn = document.getElementById('save-draft-btn');
     
+    // Initialize Quill
+    const quill = new Quill('#editor-container', {
+        theme: 'snow',
+        modules: {
+            toolbar: [
+                [{ 'header': [1, 2, 3, false] }],
+                ['bold', 'italic', 'underline', 'strike'],
+                ['blockquote', 'code-block'],
+                [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                ['link', 'image'],
+                ['clean']
+            ]
+        }
+    });
+
     // Global variable to store current posts for easy editing
     let currentPosts = [];
 
     function resetForm() {
         form.reset();
         document.getElementById('post-id').value = '';
+        document.getElementById('post-status').value = 'published';
+        quill.root.innerHTML = '';
         formTitle.innerHTML = '<i class="bi bi-pencil-square me-2"></i>Create Transmission';
         submitBtn.textContent = 'Publish to Network';
         cancelEditBtn.classList.add('d-none');
@@ -57,6 +75,17 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     if(cancelEditBtn) cancelEditBtn.addEventListener('click', resetForm);
     
+    if(saveDraftBtn) {
+        saveDraftBtn.addEventListener('click', () => {
+            document.getElementById('post-status').value = 'draft';
+            form.dispatchEvent(new Event('submit'));
+        });
+    }
+    
+    submitBtn.addEventListener('click', () => {
+        document.getElementById('post-status').value = 'published';
+    });
+
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
         msg.classList.add('d-none');
@@ -67,8 +96,9 @@ document.addEventListener('DOMContentLoaded', async () => {
             category: document.getElementById('post-category').value,
             image_url: document.getElementById('post-image').value,
             excerpt: document.getElementById('post-excerpt').value,
-            content: document.getElementById('post-content').value,
+            content: quill.root.innerHTML,
             is_featured: document.getElementById('post-featured').checked,
+            status: document.getElementById('post-status').value,
             author_id: session.user.id
         };
         
@@ -131,9 +161,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         currentPosts.forEach(post => {
             const date = new Date(post.created_at).toLocaleDateString();
             const starIcon = post.is_featured ? '<i class="bi bi-star-fill text-warning"></i>' : '<i class="bi bi-star text-muted"></i>';
+            const statusBadge = post.status === 'draft' ? '<span class="badge bg-warning text-dark">Draft</span>' : '<span class="badge bg-success">Published</span>';
             tbody.innerHTML += `
                 <tr>
                     <td class="text-light fw-medium"><a href="post.html?id=${post.id}" class="text-light text-decoration-none">${post.title}</a></td>
+                    <td>${statusBadge}</td>
                     <td class="text-muted small">${date}</td>
                     <td><span class="badge bg-secondary">${post.category}</span></td>
                     <td>${starIcon}</td>
@@ -168,8 +200,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                     document.getElementById('post-category').value = post.category || 'LLMs & Chatbots';
                     document.getElementById('post-image').value = post.image_url || '';
                     document.getElementById('post-excerpt').value = post.excerpt;
-                    document.getElementById('post-content').value = post.content;
+                    quill.root.innerHTML = post.content || '';
                     document.getElementById('post-featured').checked = post.is_featured;
+                    document.getElementById('post-status').value = post.status || 'published';
                     
                     formTitle.innerHTML = '<i class="bi bi-pencil-square me-2"></i>Update Transmission';
                     submitBtn.textContent = 'Save Changes';
