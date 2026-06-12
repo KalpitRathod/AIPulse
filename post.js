@@ -58,7 +58,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     async function loadLikes() {
         const { data, count, error } = await supabaseClient
             .from('likes')
-            .select('*, user_profiles(name, email)', { count: 'exact' })
+            .select('*', { count: 'exact' })
             .eq('article_id', postId);
             
         if (error) return;
@@ -71,7 +71,14 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Liked By Text
         const likedByContainer = document.getElementById('liked-by-users');
         if (data && data.length > 0) {
-            let names = data.map(l => (l.user_profiles && l.user_profiles.name) ? l.user_profiles.name.split(' ')[0] : 'Someone');
+            const userIds = [...new Set(data.map(l => l.user_id))];
+            const { data: profiles } = await supabaseClient.from('user_profiles').select('id, name').in('id', userIds);
+            
+            let names = data.map(l => {
+                const p = profiles?.find(prof => prof.id === l.user_id);
+                return (p && p.name) ? p.name.split(' ')[0] : 'Someone';
+            });
+            
             let text = `Liked by ${names[0]}`;
             if (count > 1) {
                 text += ` and ${count - 1} other${count > 2 ? 's' : ''}`;
@@ -116,7 +123,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     async function loadComments() {
         const { data: comments, error } = await supabaseClient
             .from('comments')
-            .select('*, user_profiles(name)')
+            .select('*')
             .eq('article_id', postId)
             .order('created_at', { ascending: false });
             
@@ -130,9 +137,13 @@ document.addEventListener('DOMContentLoaded', async () => {
                 list.innerHTML = '<div class="text-muted text-center py-4 small border border-secondary rounded-4">No comments yet. Be the first to start the discussion.</div>';
             }
             
+            const userIds = [...new Set(comments.map(c => c.user_id))];
+            const { data: profiles } = await supabaseClient.from('user_profiles').select('id, name').in('id', userIds);
+            
             comments.forEach(comment => {
                 const date = new Date(comment.created_at).toLocaleString();
-                const authorName = (comment.user_profiles && comment.user_profiles.name) ? comment.user_profiles.name : 'Anonymous Node';
+                const p = profiles?.find(prof => prof.id === comment.user_id);
+                const authorName = (p && p.name) ? p.name : 'Anonymous Node';
                 
                 list.innerHTML += `
                     <div class="card border border-secondary bg-dark p-3 rounded-4 shadow-sm widget-card">
