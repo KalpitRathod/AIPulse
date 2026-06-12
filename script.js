@@ -3,41 +3,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const yearSpan = document.getElementById('current-year');
     if (yearSpan) yearSpan.textContent = new Date().getFullYear();
 
-    // Theme Toggle Logic
-    const themeToggleBtn = document.getElementById('theme-toggle');
-    const htmlElement = document.documentElement;
-    const themeIcon = themeToggleBtn.querySelector('i');
-
-    let savedTheme = localStorage.getItem('theme');
-    if (!savedTheme) {
-        savedTheme = 'dark';
-        localStorage.setItem('theme', 'dark');
-    }
-    
-    htmlElement.setAttribute('data-bs-theme', savedTheme);
-    updateIcon(savedTheme);
-
-    themeToggleBtn.addEventListener('click', () => {
-        const currentTheme = htmlElement.getAttribute('data-bs-theme');
-        const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-        htmlElement.setAttribute('data-bs-theme', newTheme);
-        localStorage.setItem('theme', newTheme);
-        updateIcon(newTheme);
-    });
-
-    function updateIcon(theme) {
-        if (theme === 'dark') {
-            themeIcon.classList.remove('bi-moon-stars');
-            themeIcon.classList.add('bi-sun');
-            themeToggleBtn.classList.remove('btn-outline-dark');
-            themeToggleBtn.classList.add('btn-outline-light');
-        } else {
-            themeIcon.classList.remove('bi-sun');
-            themeIcon.classList.add('bi-moon-stars');
-            themeToggleBtn.classList.remove('btn-outline-light');
-            themeToggleBtn.classList.add('btn-outline-dark');
-        }
-    }
+    // Light mode removed - purely dark mode now
 
     // Check Auth and update Navbar
     await checkAuthAndUpdateUI();
