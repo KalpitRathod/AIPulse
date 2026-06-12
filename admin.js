@@ -37,15 +37,32 @@ document.addEventListener('DOMContentLoaded', async () => {
         return; // Stop execution
     }
 
-    // CREATE POST
+    // CREATE OR UPDATE POST
     const form = document.getElementById('create-post-form');
     const msg = document.getElementById('post-msg');
+    const cancelEditBtn = document.getElementById('cancel-edit-btn');
+    const formTitle = document.getElementById('form-title');
+    const submitBtn = document.getElementById('submit-post-btn');
+    
+    // Global variable to store current posts for easy editing
+    let currentPosts = [];
+
+    function resetForm() {
+        form.reset();
+        document.getElementById('post-id').value = '';
+        formTitle.innerHTML = '<i class="bi bi-pencil-square me-2"></i>Create Transmission';
+        submitBtn.textContent = 'Publish to Network';
+        cancelEditBtn.classList.add('d-none');
+    }
+
+    if(cancelEditBtn) cancelEditBtn.addEventListener('click', resetForm);
     
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
         msg.classList.add('d-none');
         
-        const newPost = {
+        const postId = document.getElementById('post-id').value;
+        const postData = {
             title: document.getElementById('post-title').value,
             category: document.getElementById('post-category').value,
             image_url: document.getElementById('post-image').value,
@@ -55,13 +72,21 @@ document.addEventListener('DOMContentLoaded', async () => {
             author_id: session.user.id
         };
         
-        const { error } = await supabaseClient.from('articles').insert([newPost]);
+        let error;
+        if (postId) {
+            const res = await supabaseClient.from('articles').update(postData).eq('id', postId);
+            error = res.error;
+        } else {
+            const res = await supabaseClient.from('articles').insert([postData]);
+            error = res.error;
+        }
         
         if (error) {
-            alert('Error creating post: ' + error.message);
+            alert('Error saving post: ' + error.message);
         } else {
+            msg.textContent = postId ? 'Updated successfully.' : 'Published successfully.';
             msg.classList.remove('d-none');
-            form.reset();
+            resetForm();
             loadPosts();
         }
     });
@@ -80,13 +105,15 @@ document.addEventListener('DOMContentLoaded', async () => {
             return;
         }
         
-        if (!data || data.length === 0) {
+        currentPosts = data || [];
+        
+        if (currentPosts.length === 0) {
             tbody.innerHTML = `<tr><td colspan="5" class="text-center text-muted py-4">No transmissions found in the database.</td></tr>`;
             return;
         }
         
         tbody.innerHTML = '';
-        data.forEach(post => {
+        currentPosts.forEach(post => {
             const date = new Date(post.created_at).toLocaleDateString();
             const starIcon = post.is_featured ? '<i class="bi bi-star-fill text-warning"></i>' : '<i class="bi bi-star text-muted"></i>';
             tbody.innerHTML += `
@@ -96,17 +123,40 @@ document.addEventListener('DOMContentLoaded', async () => {
                     <td><span class="badge bg-secondary">${post.category}</span></td>
                     <td>${starIcon}</td>
                     <td>
+                        <button class="btn btn-sm btn-outline-info edit-post rounded-pill me-1" data-id="${post.id}"><i class="bi bi-pencil"></i></button>
                         <button class="btn btn-sm btn-outline-danger delete-post rounded-pill" data-id="${post.id}"><i class="bi bi-trash"></i></button>
                     </td>
                 </tr>
             `;
         });
         
+        document.querySelectorAll('.edit-post').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const id = e.currentTarget.getAttribute('data-id');
+                const post = currentPosts.find(p => p.id === id);
+                if(post) {
+                    document.getElementById('post-id').value = post.id;
+                    document.getElementById('post-title').value = post.title;
+                    document.getElementById('post-category').value = post.category || 'LLMs & Chatbots';
+                    document.getElementById('post-image').value = post.image_url || '';
+                    document.getElementById('post-excerpt').value = post.excerpt;
+                    document.getElementById('post-content').value = post.content;
+                    document.getElementById('post-featured').checked = post.is_featured;
+                    
+                    formTitle.innerHTML = '<i class="bi bi-pencil-square me-2"></i>Update Transmission';
+                    submitBtn.textContent = 'Save Changes';
+                    cancelEditBtn.classList.remove('d-none');
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
+            });
+        });
+
         document.querySelectorAll('.delete-post').forEach(btn => {
             btn.addEventListener('click', async (e) => {
                 if(confirm('Are you sure you want to permanently delete this transmission?')) {
                     const id = e.currentTarget.getAttribute('data-id');
                     await supabaseClient.from('articles').delete().eq('id', id);
+                    if(document.getElementById('post-id').value === id) resetForm();
                     loadPosts();
                 }
             });

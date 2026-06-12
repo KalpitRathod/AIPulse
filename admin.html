@@ -28,7 +28,7 @@
         <div class="col-lg-4 mb-5">
             <div class="card border-0 shadow-sm rounded-4 widget-card h-100">
                 <div class="card-body p-4">
-                    <h5 class="card-title fw-bold ai-font mb-4 text-primary"><i class="bi bi-pencil-square me-2"></i>Create Transmission</h5>
+                    <h5 id="form-title" class="card-title fw-bold ai-font mb-4 text-primary"><i class="bi bi-pencil-square me-2"></i>Create Transmission</h5>
                     <form id="create-post-form">
                         <div class="mb-3">
                             <label class="form-label text-muted small">Title</label>
@@ -63,7 +63,11 @@
                                 Set as Featured (Hero Section)
                             </label>
                         </div>
-                        <button type="submit" class="btn btn-primary w-100 rounded-pill fw-medium">Publish to Network</button>
+                        <input type="hidden" id="post-id" value="">
+                        <div class="d-flex gap-2">
+                            <button type="submit" id="submit-post-btn" class="btn btn-primary w-100 rounded-pill fw-medium">Publish to Network</button>
+                            <button type="button" id="cancel-edit-btn" class="btn btn-outline-secondary w-50 rounded-pill d-none">Cancel</button>
+                        </div>
                     </form>
                     <div id="post-msg" class="mt-3 text-success small d-none text-center bg-dark p-2 rounded-3">Published successfully.</div>
                 </div>
