@@ -22,6 +22,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         document.getElementById('login-to-comment').classList.remove('d-none');
     }
 
+    // Increment View Count immediately
+    await supabaseClient.rpc('increment_view', { article_id_param: postId });
+
     // Load Post Data
     const { data: post, error } = await supabaseClient
         .from('articles')
@@ -47,6 +50,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('og-desc').setAttribute('content', post.excerpt);
     if(post.image_url) document.getElementById('og-image').setAttribute('content', post.image_url);
     document.getElementById('post-date').innerHTML = `<i class="bi bi-calendar3 me-1"></i> ${new Date(post.created_at).toLocaleDateString()}`;
+    document.getElementById('post-views').textContent = (post.views || 0) + 1; // +1 to account for current view
     document.getElementById('post-image').src = post.image_url || 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=1200';
     document.getElementById('post-body').innerHTML = post.content.replace(/\n/g, '<br>');
 
@@ -54,7 +58,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     async function loadLikes() {
         const { data, count, error } = await supabaseClient
             .from('likes')
-            .select('*', { count: 'exact' })
+            .select('*, user_profiles(name, email)', { count: 'exact' })
             .eq('article_id', postId);
             
         if (error) return;
@@ -64,6 +68,19 @@ document.addEventListener('DOMContentLoaded', async () => {
         const likeBtn = document.getElementById('like-btn');
         const icon = likeBtn.querySelector('i');
         
+        // Liked By Text
+        const likedByContainer = document.getElementById('liked-by-users');
+        if (data && data.length > 0) {
+            let names = data.map(l => (l.user_profiles && l.user_profiles.name) ? l.user_profiles.name.split(' ')[0] : 'Someone');
+            let text = `Liked by ${names[0]}`;
+            if (count > 1) {
+                text += ` and ${count - 1} other${count > 2 ? 's' : ''}`;
+            }
+            likedByContainer.textContent = text;
+        } else {
+            likedByContainer.textContent = 'Be the first to like this.';
+        }
+
         if (user && data.some(like => like.user_id === user.id)) {
             icon.classList.replace('bi-heart', 'bi-heart-fill');
             likeBtn.classList.replace('btn-outline-danger', 'btn-danger');
@@ -99,7 +116,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     async function loadComments() {
         const { data: comments, error } = await supabaseClient
             .from('comments')
-            .select('*')
+            .select('*, user_profiles(name)')
             .eq('article_id', postId)
             .order('created_at', { ascending: false });
             
@@ -115,12 +132,16 @@ document.addEventListener('DOMContentLoaded', async () => {
             
             comments.forEach(comment => {
                 const date = new Date(comment.created_at).toLocaleString();
+                const authorName = (comment.user_profiles && comment.user_profiles.name) ? comment.user_profiles.name : 'Anonymous Node';
+                
                 list.innerHTML += `
                     <div class="card border border-secondary bg-dark p-3 rounded-4 shadow-sm widget-card">
                         <div class="d-flex align-items-center mb-3">
                             <i class="bi bi-person-circle fs-3 text-primary me-3"></i>
                             <div>
-                                <h6 class="mb-0 text-light ai-font">Anonymous Node</h6>
+                                <h6 class="mb-0 ai-font">
+                                    <a href="profile.html?id=${comment.user_id}" class="text-light text-decoration-none hover-primary">${authorName}</a>
+                                </h6>
                                 <small class="text-muted" style="font-size: 0.75rem;">${date}</small>
                             </div>
                         </div>

@@ -18,9 +18,18 @@ async function checkAuthAndUpdateUI() {
 
     const authLinkContainer = document.getElementById('auth-link-container');
     if (authLinkContainer) {
-        if (user) {
+            // Check if user is Admin
+            let isAdmin = false;
+            const { data: roleData } = await supabaseClient.from('user_roles').select('role').eq('user_id', user.id).single();
+            if (roleData && roleData.role === 'admin') {
+                isAdmin = true;
+            }
+            
+            const dashboardBtn = isAdmin ? `<a href="admin.html" class="btn btn-outline-light rounded-pill px-3 me-2 shadow-sm border-secondary text-decoration-none">Command Center</a>` : '';
+            
             authLinkContainer.innerHTML = `
-                <a href="admin.html" class="btn btn-outline-light rounded-pill px-3 me-2 shadow-sm border-secondary text-decoration-none">Dashboard</a>
+                ${dashboardBtn}
+                <a href="profile.html?id=${user.id}" class="btn btn-outline-primary rounded-pill px-3 me-2 shadow-sm border-secondary text-decoration-none"><i class="bi bi-person"></i> Profile</a>
                 <button id="logout-btn" class="btn btn-primary rounded-pill px-4 shadow-sm">Logout</button>
             `;
             document.getElementById('logout-btn').addEventListener('click', async () => {
