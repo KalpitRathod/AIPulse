@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | AI Pulse</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="d-flex align-items-center justify-content-center min-vh-100 bg-dark py-5">
+    <div class="card border-0 shadow-lg rounded-4 p-4 widget-card my-auto w-100" style="max-width: 400px; margin: 0 15px;">
+        <div class="text-center mb-4">
+            <h2 class="text-primary ai-font fw-bold m-0"><i class="bi bi-cpu text-light me-2"></i>Access Terminal</h2>
+            <p class="text-muted small mt-2">Initialize secure session to continue.</p>
+        </div>
+        
+        <ul class="nav nav-pills nav-justified mb-4 d-none" id="pills-tab" role="tablist">
+          <li class="nav-item"><button class="nav-link active" id="pills-login-tab" data-bs-toggle="pill" data-bs-target="#pills-login">Login</button></li>
+          <li class="nav-item"><button class="nav-link" id="pills-signup-tab" data-bs-toggle="pill" data-bs-target="#pills-signup">Sign Up</button></li>
+          <li class="nav-item"><button class="nav-link" id="pills-forgot-tab" data-bs-toggle="pill" data-bs-target="#pills-forgot">Forgot</button></li>
+        </ul>
+        
+        <div class="d-flex justify-content-center gap-2 mb-4">
+            <button class="btn btn-sm btn-outline-secondary rounded-pill active" onclick="document.getElementById('pills-login-tab').click();" id="btn-show-login">Login</button>
+            <button class="btn btn-sm btn-outline-secondary rounded-pill" onclick="document.getElementById('pills-signup-tab').click();" id="btn-show-signup">Sign Up</button>
+        </div>
+        
+        <div class="tab-content" id="pills-tabContent">
+          <!-- Login -->
+          <div class="tab-pane fade show active" id="pills-login" role="tabpanel">
+            <form id="login-form">
+                <div class="mb-3">
+                    <label class="form-label text-muted small">Email Address</label>
+                    <input type="email" class="form-control rounded-pill bg-dark border-secondary text-light shadow-none" id="login-email" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label text-muted small">Password</label>
+                    <input type="password" class="form-control rounded-pill bg-dark border-secondary text-light shadow-none" id="login-password" required>
+                </div>
+                <div class="text-end mb-4">
+                    <a href="#" onclick="document.getElementById('pills-forgot-tab').click(); return false;" class="small text-muted text-decoration-none">Forgot password?</a>
+                </div>
+                <button type="submit" class="btn btn-primary w-100 rounded-pill">Initialize Session</button>
+            </form>
+          </div>
+          <!-- Signup -->
+          <div class="tab-pane fade" id="pills-signup" role="tabpanel">
+             <form id="signup-form">
+                <div class="mb-3">
+                    <label class="form-label text-muted small">Email Address</label>
+                    <input type="email" class="form-control rounded-pill bg-dark border-secondary text-light shadow-none" id="signup-email" required>
+                </div>
+                <div class="mb-4">
+                    <label class="form-label text-muted small">Password</label>
+                    <input type="password" class="form-control rounded-pill bg-dark border-secondary text-light shadow-none" id="signup-password" required>
+                </div>
+                <button type="submit" class="btn btn-primary w-100 rounded-pill">Create Node</button>
+            </form>
+          </div>
+          <!-- Forgot Password -->
+          <div class="tab-pane fade" id="pills-forgot" role="tabpanel">
+             <form id="forgot-form">
+                <p class="text-muted small text-center mb-4">Submit your email. The Network Admin will contact you regarding credential rotation.</p>
+                <div class="mb-4">
+                    <label class="form-label text-muted small">Email Address</label>
+                    <input type="email" class="form-control rounded-pill bg-dark border-secondary text-light shadow-none" id="forgot-email" required>
+                </div>
+                <button type="submit" class="btn btn-warning w-100 rounded-pill text-dark fw-medium">Submit Request</button>
+                <div class="text-center mt-3">
+                    <a href="#" onclick="document.getElementById('pills-login-tab').click(); return false;" class="small text-muted text-decoration-none">Back to Login</a>
+                </div>
+            </form>
+          </div>
+        </div>
+        
+        <div id="auth-error" class="alert alert-danger small mt-3 text-center rounded-3 border-0 py-2 d-none"></div>
+        <div id="auth-success" class="alert alert-success small mt-3 text-center rounded-3 border-0 py-2 d-none"></div>
+        
+        <div class="text-center mt-4 border-top border-secondary pt-3">
+            <a href="index.html" class="text-decoration-none text-muted small"><i class="bi bi-arrow-left me-1"></i> Return to Mainframe</a>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="supabase-client.js"></script>
+    <script src="auth.js"></script>
+    <script>
+        // Simple UI toggle for the buttons
+        document.getElementById('pills-login-tab').addEventListener('click', () => {
+            document.getElementById('btn-show-login').classList.add('active');
+            document.getElementById('btn-show-signup').classList.remove('active');
+        });
+        document.getElementById('pills-signup-tab').addEventListener('click', () => {
+            document.getElementById('btn-show-signup').classList.add('active');
+            document.getElementById('btn-show-login').classList.remove('active');
+        });
+        document.getElementById('pills-forgot-tab').addEventListener('click', () => {
+            document.getElementById('btn-show-signup').classList.remove('active');
+            document.getElementById('btn-show-login').classList.remove('active');
+        });
+    </script>
+</body>
+</html>
