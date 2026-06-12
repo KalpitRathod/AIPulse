@@ -11,37 +11,7 @@
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://ai-pulse-sepia-pi.vercel.app/post.html?id=9fcff6a9-94da-41f1-85f4-99eaa1ba09b8</loc>
-    <lastmod>2026-06-12</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
     <loc>https://ai-pulse-sepia-pi.vercel.app/post.html?id=282b6200-2b7c-4e8d-b1bf-2e6a663f81ba</loc>
-    <lastmod>2026-06-12</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://ai-pulse-sepia-pi.vercel.app/post.html?id=cbe544c8-19d4-40c9-8210-28347c10a63f</loc>
-    <lastmod>2026-06-12</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://ai-pulse-sepia-pi.vercel.app/post.html?id=34a1ec6c-2213-4af8-977e-4d1a741c6417</loc>
-    <lastmod>2026-06-12</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://ai-pulse-sepia-pi.vercel.app/post.html?id=92ab0e0b-529d-417c-ad81-ab96ce8d48b3</loc>
-    <lastmod>2026-06-12</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://ai-pulse-sepia-pi.vercel.app/post.html?id=c82694ed-16fc-43a4-b84e-ffa3b2d5e3be</loc>
     <lastmod>2026-06-12</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
@@ -53,9 +23,57 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://ai-pulse-sepia-pi.vercel.app/post.html?id=34a1ec6c-2213-4af8-977e-4d1a741c6417</loc>
+    <lastmod>2026-06-12</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://ai-pulse-sepia-pi.vercel.app/post.html?id=c82694ed-16fc-43a4-b84e-ffa3b2d5e3be</loc>
+    <lastmod>2026-06-12</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://ai-pulse-sepia-pi.vercel.app/post.html?id=cbe544c8-19d4-40c9-8210-28347c10a63f</loc>
+    <lastmod>2026-06-12</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://ai-pulse-sepia-pi.vercel.app/post.html?id=92ab0e0b-529d-417c-ad81-ab96ce8d48b3</loc>
+    <lastmod>2026-06-12</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://ai-pulse-sepia-pi.vercel.app/post.html?id=2e147757-1bd4-4f1d-a2f2-64b0f4072aa1</loc>
+    <lastmod>2026-06-12</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://ai-pulse-sepia-pi.vercel.app/post.html?id=9fcff6a9-94da-41f1-85f4-99eaa1ba09b8</loc>
+    <lastmod>2026-06-12</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://ai-pulse-sepia-pi.vercel.app/post.html?id=bf6617a1-13be-478f-b83a-db2770d0f7c2</loc>
     <lastmod>2026-06-12</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://ai-pulse-sepia-pi.vercel.app/profile.html?id=bcfc22b0-9321-419a-a83f-06967853388a</loc>
+    <lastmod>2026-06-12</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://ai-pulse-sepia-pi.vercel.app/profile.html?id=26e13543-9d71-4bfb-833c-413a6c53057e</loc>
+    <lastmod>2026-06-12</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
   </url>
 </urlset>
