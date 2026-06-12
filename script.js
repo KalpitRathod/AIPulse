@@ -50,7 +50,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                                 <div class="col-lg-6">
                                     <span class="badge bg-primary rounded-pill px-3 py-2 mb-3 text-uppercase tracking-wide"><i class="bi bi-star-fill me-1"></i> Featured Transmission</span>
                                     <div class="mb-3 d-flex align-items-center">
-                                        <div class="bg-primary bg-opacity-25 text-primary border border-primary rounded-circle d-flex align-items-center justify-content-center fw-bold me-2" style="width: 32px; height: 32px; font-size: 0.85rem;">
+                                        <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center fw-bold me-2 shadow-sm" style="width: 32px; height: 32px; font-size: 0.85rem;">
                                             ${fAuthorName.charAt(0).toUpperCase()}
                                         </div>
                                         <a href="profile.html?id=${fPost.author_id}" class="text-decoration-none text-light fw-medium">${fAuthorName}</a>
