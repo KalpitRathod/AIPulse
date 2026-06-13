@@ -1,6 +1,6 @@
 :root {
-    --primary-color: #8b5cf6; /* Electric Purple */
-    --primary-hover: #7c3aed;
+    --primary-color: #6d28d9; /* Darker Purple for contrast */
+    --primary-hover: #5b21b6;
     --bg-light: #f8fafc;
     --text-dark: #0f172a;
     --text-muted: #64748b;
@@ -23,7 +23,17 @@ body {
     --bg-light: #09090b; /* Very dark background */
     --text-dark: #f8fafc;
     --text-muted: #a1a1aa;
-    --primary-color: #a855f7; /* Lighter purple for dark mode */
+    --primary-color: #c084fc; /* Lighter purple for dark mode */
+}
+
+[data-bs-theme="dark"] .bg-primary,
+[data-bs-theme="dark"] .btn-primary,
+[data-bs-theme="dark"] .badge.bg-primary {
+    color: #09090b !important;
+}
+
+[data-bs-theme="dark"] .btn-outline-primary {
+    color: var(--primary-color) !important;
 }
 
 [data-bs-theme="dark"] body {

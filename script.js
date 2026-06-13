@@ -60,7 +60,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                                     <a href="/post/${fPost.slug || fPost.id}" class="btn btn-primary btn-lg rounded-pill px-5 py-3 shadow-sm">Read Analysis</a>
                                 </div>
                                 <div class="col-lg-6 mt-5 mt-lg-0 text-center">
-                                    <img class="img-fluid rounded-4 shadow-lg border border-secondary" style="max-height: 400px; object-fit: cover; filter: drop-shadow(0 0 20px rgba(168, 85, 247, 0.2));" src="${fPost.image_url || 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=1200'}" alt="${fPost.title}">
+                                    <img class="img-fluid rounded-4 shadow-lg border border-secondary" width="100%" height="400" style="max-height: 400px; object-fit: cover; filter: drop-shadow(0 0 20px rgba(168, 85, 247, 0.2));" src="${fPost.image_url ? fPost.image_url.replace('/upload/', '/upload/w_800,c_scale/') : 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=1200'}" alt="${fPost.title}">
                                 </div>
                             </div>
                         </div>
@@ -157,7 +157,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                         const date = new Date(article.created_at).toLocaleDateString();
                         const html = `
                         <div class="card mb-4 border-0 shadow-sm rounded-4 overflow-hidden blog-card widget-card d-flex flex-column h-100">
-                            <a href="/post/${article.slug || article.id}"><img class="card-img-top border-bottom border-secondary" style="height: 250px; object-fit: cover;" src="${article.image_url || 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800'}" alt="${article.title}" /></a>
+                            <a href="/post/${article.slug || article.id}" tabindex="-1" aria-hidden="true"><img class="card-img-top border-bottom border-secondary" width="100%" height="250" style="height: 250px; object-fit: cover;" src="${article.image_url ? article.image_url.replace('/upload/', '/upload/w_400,c_scale/') : 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800'}" alt="${article.title}" /></a>
                             <div class="card-body p-4 d-flex flex-column">
                                 <div class="small text-muted mb-2">
                                     <span class="badge bg-primary me-2 px-2 py-1">${article.category || 'AI News'}</span> 
@@ -173,7 +173,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                                         </div>
                                         <a href="profile.html?id=${article.author_id}" class="text-decoration-none text-light small fw-medium">${authorName}</a>
                                     </div>
-                                    <a class="btn btn-sm btn-outline-primary rounded-pill px-3 fw-medium" href="/post/${article.slug || article.id}">Read →</a>
+                                    <a class="btn btn-sm btn-outline-primary rounded-pill px-3 fw-medium" tabindex="-1" aria-hidden="true" href="/post/${article.slug || article.id}">Read →</a>
                                 </div>
                             </div>
                         </div>
