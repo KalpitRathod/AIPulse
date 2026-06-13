@@ -56,6 +56,10 @@ document.addEventListener('DOMContentLoaded', async () => {
             msg.classList.remove('d-none');
             form.reset();
             quill.root.innerHTML = '';
+            
+            // Ping Google Search Console to crawl the new Sitemap
+            try { fetch('/api/ping-google', { method: 'POST' }); } catch(e) {}
+            
             setTimeout(() => {
                 window.location.href = 'index.html';
             }, 2000);

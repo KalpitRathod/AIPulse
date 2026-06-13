@@ -121,6 +121,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         } else {
             msg.textContent = postId ? 'Updated successfully.' : 'Published successfully.';
             msg.classList.remove('d-none');
+            
+            // Ping Google Search Console to crawl the new Sitemap
+            try { fetch('/api/ping-google', { method: 'POST' }); } catch(e) {}
+            
             resetForm();
             loadPosts();
         }
