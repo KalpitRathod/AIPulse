@@ -57,7 +57,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                                     </div>
                                     <h1 class="display-4 fw-bolder mb-4 ai-font text-light" style="word-wrap: break-word;">${fPost.title}</h1>
                                     <p class="lead fw-normal text-muted mb-4" style="word-wrap: break-word;">${fPost.excerpt}</p>
-                                    <a href="post.html?id=${fPost.id}" class="btn btn-primary btn-lg rounded-pill px-5 py-3 shadow-sm">Read Analysis</a>
+                                    <a href="/post/${fPost.slug || fPost.id}" class="btn btn-primary btn-lg rounded-pill px-5 py-3 shadow-sm">Read Analysis</a>
                                 </div>
                                 <div class="col-lg-6 mt-5 mt-lg-0 text-center">
                                     <img class="img-fluid rounded-4 shadow-lg border border-secondary" style="max-height: 400px; object-fit: cover; filter: drop-shadow(0 0 20px rgba(168, 85, 247, 0.2));" src="${fPost.image_url || 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=1200'}" alt="${fPost.title}">
@@ -157,13 +157,13 @@ document.addEventListener('DOMContentLoaded', async () => {
                         const date = new Date(article.created_at).toLocaleDateString();
                         const html = `
                         <div class="card mb-4 border-0 shadow-sm rounded-4 overflow-hidden blog-card widget-card d-flex flex-column h-100">
-                            <a href="post.html?id=${article.id}"><img class="card-img-top border-bottom border-secondary" style="height: 250px; object-fit: cover;" src="${article.image_url || 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800'}" alt="${article.title}" /></a>
+                            <a href="/post/${article.slug || article.id}"><img class="card-img-top border-bottom border-secondary" style="height: 250px; object-fit: cover;" src="${article.image_url || 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800'}" alt="${article.title}" /></a>
                             <div class="card-body p-4 d-flex flex-column">
                                 <div class="small text-muted mb-2">
                                     <span class="badge bg-primary me-2 px-2 py-1">${article.category || 'AI News'}</span> 
                                     <i class="bi bi-calendar3 me-1"></i> ${date}
                                 </div>
-                                <h2 class="card-title h4 fw-bold ai-font mt-2" style="word-wrap: break-word;"><a href="post.html?id=${article.id}" class="text-decoration-none text-light">${article.title}</a></h2>
+                                <h2 class="card-title h4 fw-bold ai-font mt-2" style="word-wrap: break-word;"><a href="/post/${article.slug || article.id}" class="text-decoration-none text-light">${article.title}</a></h2>
                                 <p class="card-text text-muted mb-4 flex-grow-1" style="word-wrap: break-word;">${article.excerpt}</p>
                                 
                                 <div class="d-flex align-items-center justify-content-between mt-auto pt-3 border-top border-secondary">
@@ -173,7 +173,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                                         </div>
                                         <a href="profile.html?id=${article.author_id}" class="text-decoration-none text-light small fw-medium">${authorName}</a>
                                     </div>
-                                    <a class="btn btn-sm btn-outline-primary rounded-pill px-3 fw-medium" href="post.html?id=${article.id}">Read →</a>
+                                    <a class="btn btn-sm btn-outline-primary rounded-pill px-3 fw-medium" href="/post/${article.slug || article.id}">Read →</a>
                                 </div>
                             </div>
                         </div>

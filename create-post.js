@@ -32,15 +32,19 @@ document.addEventListener('DOMContentLoaded', async () => {
         submitBtn.disabled = true;
         submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Transmitting...';
         
+        const titleVal = document.getElementById('post-title').value;
+        const slugStr = titleVal.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '') + '-' + Math.random().toString(36).substr(2, 5);
+        
         const postData = {
-            title: document.getElementById('post-title').value,
+            title: titleVal,
+            slug: slugStr,
             category: document.getElementById('post-category').value,
             image_url: document.getElementById('post-image').value,
             excerpt: document.getElementById('post-excerpt').value,
             content: quill.root.innerHTML,
             is_featured: false,
             status: 'published',
-            type: 'community', // <--- This marks it for the Community tab!
+            type: 'community',
             author_id: session.user.id
         };
         

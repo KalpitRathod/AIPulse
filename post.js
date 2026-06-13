@@ -8,9 +8,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (yearSpan) yearSpan.textContent = new Date().getFullYear();
 
     const urlParams = new URLSearchParams(window.location.search);
-    const postId = urlParams.get('id');
+    let postId = urlParams.get('id');
+    let slug = null;
+
+    if (!postId && window.location.pathname.includes('/post/')) {
+        slug = window.location.pathname.split('/post/')[1].split('?')[0];
+    }
     
-    if (!postId) {
+    if (!postId && !slug) {
         document.getElementById('post-loading').innerHTML = '<div class="alert alert-warning border-0 rounded-4">No article ID provided in transmission stream.</div>';
         return;
     }
@@ -22,20 +27,26 @@ document.addEventListener('DOMContentLoaded', async () => {
         document.getElementById('login-to-comment').classList.remove('d-none');
     }
 
-    // Increment View Count immediately
-    await supabaseClient.rpc('increment_view', { article_id_param: postId });
-
     // Load Post Data
-    const { data: post, error } = await supabaseClient
-        .from('articles')
-        .select('*')
-        .eq('id', postId)
-        .single();
+    let query;
+    if (slug) {
+        query = supabaseClient.from('articles').select('*').eq('slug', slug).single();
+    } else {
+        query = supabaseClient.from('articles').select('*').eq('id', postId).single();
+    }
+    
+    const { data: post, error } = await query;
         
     if (error || !post) {
         document.getElementById('post-loading').innerHTML = '<div class="alert alert-danger border-0 rounded-4">Error accessing the requested transmission.</div>';
         return;
     }
+
+    // Increment View Count immediately
+    await supabaseClient.rpc('increment_view', { article_id_param: post.id });
+    
+    // Ensure we have postId for the rest of the script
+    postId = post.id;
 
     document.getElementById('post-loading').classList.add('d-none');
     document.getElementById('post-content-container').classList.remove('d-none');

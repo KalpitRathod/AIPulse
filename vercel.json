@@ -3,6 +3,10 @@
     {
       "source": "/post.html",
       "destination": "/api/post"
+    },
+    {
+      "source": "/post/:slug",
+      "destination": "/api/post"
     }
   ]
 }

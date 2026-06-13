@@ -91,8 +91,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         msg.classList.add('d-none');
         
         const postId = document.getElementById('post-id').value;
+        const titleVal = document.getElementById('post-title').value;
         const postData = {
-            title: document.getElementById('post-title').value,
+            title: titleVal,
             category: document.getElementById('post-category').value,
             image_url: document.getElementById('post-image').value,
             excerpt: document.getElementById('post-excerpt').value,
@@ -101,6 +102,10 @@ document.addEventListener('DOMContentLoaded', async () => {
             status: document.getElementById('post-status').value,
             author_id: session.user.id
         };
+        
+        if (!postId) {
+            postData.slug = titleVal.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '') + '-' + Math.random().toString(36).substr(2, 5);
+        }
         
         let error;
         if (postId) {
@@ -164,7 +169,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             const statusBadge = post.status === 'draft' ? '<span class="badge bg-warning text-dark">Draft</span>' : '<span class="badge bg-success">Published</span>';
             tbody.innerHTML += `
                 <tr>
-                    <td class="text-light fw-medium"><a href="post.html?id=${post.id}" class="text-light text-decoration-none">${post.title}</a></td>
+                    <td class="text-light fw-medium"><a href="/post/${post.slug || post.id}" class="text-light text-decoration-none">${post.title}</a></td>
                     <td>${statusBadge}</td>
                     <td class="text-muted small">${date}</td>
                     <td><span class="badge bg-secondary">${post.category}</span></td>
@@ -254,7 +259,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         sitemapBtn.addEventListener('click', async () => {
             sitemapBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Generating...';
             
-            const { data: allPosts, error } = await supabaseClient.from('articles').select('id, created_at');
+            const { data: allPosts, error } = await supabaseClient.from('articles').select('id, slug, created_at');
             if (error) {
                 alert('Error fetching posts for sitemap: ' + error.message);
                 sitemapBtn.innerHTML = '<i class="bi bi-diagram-3 me-1"></i>Generate Sitemap';
@@ -269,7 +274,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             
             if (allPosts) {
                 allPosts.forEach(p => {
-                    xml += `  <url>\n    <loc>${baseUrl}/post.html?id=${p.id}</loc>\n    <lastmod>${p.created_at.split('T')[0]}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.8</priority>\n  </url>\n`;
+                    xml += `  <url>\n    <loc>${baseUrl}/post/${p.slug || p.id}</loc>\n    <lastmod>${p.created_at.split('T')[0]}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.8</priority>\n  </url>\n`;
                 });
             }
             

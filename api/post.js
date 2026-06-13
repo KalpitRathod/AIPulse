@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 
 export default async function handler(req, res) {
-    const { id } = req.query;
+    const { id, slug } = req.query;
 
     // Read the static _post.html file
     const filePath = path.join(process.cwd(), '_post.html');
@@ -13,7 +13,7 @@ export default async function handler(req, res) {
         return res.status(500).send("Error reading HTML file");
     }
 
-    if (!id) {
+    if (!id && !slug) {
         res.setHeader('Content-Type', 'text/html');
         return res.status(200).send(html);
     }
@@ -22,7 +22,8 @@ export default async function handler(req, res) {
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJjY2Rja211ZHZ2aGx1aGNudm5pIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEyNjA5MTcsImV4cCI6MjA5NjgzNjkxN30.hBcyzIj8gA1RiLg5aTnFyQaO2MxmK8YRvGk2F9ZPKbI';
 
     try {
-        const response = await fetch(`${SUPABASE_URL}/rest/v1/articles?id=eq.${id}&select=*`, {
+        const queryFilter = slug ? `slug=eq.${slug}` : `id=eq.${id}`;
+        const response = await fetch(`${SUPABASE_URL}/rest/v1/articles?${queryFilter}&select=*`, {
             headers: {
                 'apikey': SUPABASE_ANON_KEY,
                 'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
@@ -44,9 +45,11 @@ export default async function handler(req, res) {
             html = html.replace(/<meta property="og:description" id="og-desc" content=".*?">/g, `<meta property="og:description" id="og-desc" content="${excerpt}">`);
             html = html.replace(/<meta property="og:image" id="og-image" content=".*?">/g, `<meta property="og:image" id="og-image" content="${image}">`);
             
+            const canonicalUrl = slug ? `https://ai-pulse-sepia-pi.vercel.app/post/${slug}` : `https://ai-pulse-sepia-pi.vercel.app/post.html?id=${id}`;
+            
             const seoTags = \`<meta name="twitter:card" content="summary_large_image">
-<meta property="og:url" content="https://ai-pulse-sepia-pi.vercel.app/post.html?id=\${id}">
-<link rel="canonical" href="https://ai-pulse-sepia-pi.vercel.app/post.html?id=\${id}" />
+<meta property="og:url" content="\${canonicalUrl}">
+<link rel="canonical" href="\${canonicalUrl}" />
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
