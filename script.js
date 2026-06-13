@@ -60,7 +60,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                                     <a href="post.html?id=${fPost.id}" class="btn btn-primary btn-lg rounded-pill px-5 py-3 shadow-sm">Read Analysis</a>
                                 </div>
                                 <div class="col-lg-6 mt-5 mt-lg-0 text-center">
-                                    <img class="img-fluid rounded-4 shadow-lg border border-secondary" style="max-height: 400px; object-fit: cover; filter: drop-shadow(0 0 20px rgba(168, 85, 247, 0.2));" src="${fPost.image_url || 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=1200'}" alt="Featured Image">
+                                    <img class="img-fluid rounded-4 shadow-lg border border-secondary" style="max-height: 400px; object-fit: cover; filter: drop-shadow(0 0 20px rgba(168, 85, 247, 0.2));" src="${fPost.image_url || 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=1200'}" alt="${fPost.title}">
                                 </div>
                             </div>
                         </div>
@@ -157,7 +157,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                         const date = new Date(article.created_at).toLocaleDateString();
                         const html = `
                         <div class="card mb-4 border-0 shadow-sm rounded-4 overflow-hidden blog-card widget-card d-flex flex-column h-100">
-                            <a href="post.html?id=${article.id}"><img class="card-img-top border-bottom border-secondary" style="height: 250px; object-fit: cover;" src="${article.image_url || 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800'}" alt="Article" /></a>
+                            <a href="post.html?id=${article.id}"><img class="card-img-top border-bottom border-secondary" style="height: 250px; object-fit: cover;" src="${article.image_url || 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800'}" alt="${article.title}" /></a>
                             <div class="card-body p-4 d-flex flex-column">
                                 <div class="small text-muted mb-2">
                                     <span class="badge bg-primary me-2 px-2 py-1">${article.category || 'AI News'}</span> 

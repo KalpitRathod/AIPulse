@@ -62,6 +62,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('post-date').innerHTML = `<i class="bi bi-calendar3 me-1"></i> ${new Date(post.created_at).toLocaleDateString()}`;
     document.getElementById('post-views').textContent = (post.views || 0) + 1; // +1 to account for current view
     document.getElementById('post-image').src = post.image_url || 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=1200';
+    document.getElementById('post-image').alt = post.title;
     document.getElementById('post-body').innerHTML = post.content.replace(/\n/g, '<br>');
 
     // Load Likes
