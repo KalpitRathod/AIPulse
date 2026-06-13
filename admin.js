@@ -253,52 +253,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // GENERATE SITEMAP
+    // SITEMAP REDIRECT
     const sitemapBtn = document.getElementById('generate-sitemap-btn');
     if (sitemapBtn) {
-        sitemapBtn.addEventListener('click', async () => {
-            sitemapBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Generating...';
-            
-            const { data: allPosts, error } = await supabaseClient.from('articles').select('id, slug, created_at');
-            if (error) {
-                alert('Error fetching posts for sitemap: ' + error.message);
-                sitemapBtn.innerHTML = '<i class="bi bi-diagram-3 me-1"></i>Generate Sitemap';
-                return;
-            }
-            
-            const baseUrl = 'https://ai-pulse-sepia-pi.vercel.app';
-            let xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
-            
-            xml += `  <url>\n    <loc>${baseUrl}/</loc>\n    <changefreq>daily</changefreq>\n    <priority>1.0</priority>\n  </url>\n`;
-            xml += `  <url>\n    <loc>${baseUrl}/login.html</loc>\n    <changefreq>monthly</changefreq>\n    <priority>0.5</priority>\n  </url>\n`;
-            
-            if (allPosts) {
-                allPosts.forEach(p => {
-                    xml += `  <url>\n    <loc>${baseUrl}/post/${p.slug || p.id}</loc>\n    <lastmod>${p.created_at.split('T')[0]}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.8</priority>\n  </url>\n`;
-                });
-            }
-            
-            const { data: allUsers } = await supabaseClient.from('user_profiles').select('id, created_at');
-            if (allUsers) {
-                allUsers.forEach(u => {
-                    xml += `  <url>\n    <loc>${baseUrl}/profile.html?id=${u.id}</loc>\n    <lastmod>${u.created_at.split('T')[0]}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.6</priority>\n  </url>\n`;
-                });
-            }
-            
-            xml += `</urlset>`;
-            
-            const blob = new Blob([xml], { type: 'application/xml' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'sitemap.xml';
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-            
-            sitemapBtn.innerHTML = '<i class="bi bi-diagram-3 me-1"></i>Generate Sitemap';
-            alert('Sitemap downloaded successfully! Replace your local sitemap.xml with this new file and push to GitHub to index all your latest posts.');
+        sitemapBtn.addEventListener('click', () => {
+            window.open('/sitemap.xml', '_blank');
         });
     }
     
