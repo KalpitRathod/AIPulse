@@ -47,19 +47,19 @@ export default async function handler(req, res) {
             
             const canonicalUrl = slug ? `https://ai-pulse-sepia-pi.vercel.app/post/${slug}` : `https://ai-pulse-sepia-pi.vercel.app/post.html?id=${id}`;
             
-            const seoTags = \`<meta name="twitter:card" content="summary_large_image">
-<meta property="og:url" content="\${canonicalUrl}">
-<link rel="canonical" href="\${canonicalUrl}" />
+            const seoTags = `<meta name="twitter:card" content="summary_large_image">
+<meta property="og:url" content="${canonicalUrl}">
+<link rel="canonical" href="${canonicalUrl}" />
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "Article",
-  "headline": "\${title}",
-  "image": "\${image}",
-  "datePublished": "\${post.created_at}",
-  "description": "\${excerpt}"
+  "headline": "${title}",
+  "image": "${image}",
+  "datePublished": "${post.created_at}",
+  "description": "${excerpt}"
 }
-</script>\`;
+</script>`;
             html = html.replace(/<meta name="twitter:card" content=".*?">/g, seoTags);
         }
     } catch (e) {
